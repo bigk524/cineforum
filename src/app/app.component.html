@@ -23,11 +23,11 @@
           <ion-icon name="star" slot="start"></ion-icon>
           <ion-label>Tendencias</ion-label>
         </ion-item>
-        <ion-item routerLink="/profile">
+        <ion-item [routerDirection]="'root'" [routerLink]="['/login']">
           <ion-icon name="person" slot="start"></ion-icon>
           <ion-label>Perfil</ion-label>
         </ion-item>
-        <ion-item routerLink="/profile">
+        <ion-item [routerDirection]="'root'" [routerLink]="['/nosotros']">
           <ion-icon name="people-circle" slot="start"></ion-icon>
           <ion-label>Nosotros</ion-label>
         </ion-item>
