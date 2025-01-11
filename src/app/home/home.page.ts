@@ -12,6 +12,7 @@ export class HomePage {
       title: 'Blade Runner 2049',
       description: 'La secuela de Blade Runner de 1982',
       poster: '/assets/bladerunner.jpg',
+      id: '/blanerunner',
     },
     {
       title: 'Deadpool 3',
