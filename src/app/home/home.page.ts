@@ -7,10 +7,33 @@ import { Component } from '@angular/core';
   standalone: false,
 })
 export class HomePage {
-  posts = [
-    { title: 'Película 1', description: 'Descripción de la película 1', image: 'https://via.placeholder.com/150' },
-    { title: 'Película 2', description: 'Descripción de la película 2', image: 'https://via.placeholder.com/150' }
-  ];
+  movies = [
+    {
+      title: 'Blade Runner 2049',
+      description: 'La secuela de Blade Runner de 1982',
+      poster: '/assets/bladerunner.jpg',
+    },
+    {
+      title: 'Deadpool 3',
+      description: 'La tercera entrega de Deadpool',
+      poster: '/assets/deadpool.jpg',
+    },
+    {
+      title: 'Profesión Peligro',
+      description: 'Ryan Gosling y Harrison Ford en una película de acción',
+      poster: '/assets/The-fall-guy.jpg',
+    },
+    {
+      title: 'Ready Player One',
+      description: 'Una película de ciencia ficción de Steven Spielberg',
+      poster: '/assets/unnamed.png',
+    },
+    {
+      title: 'The Matrix',
+      description: 'La película de los hermanos Wachowski',
+      poster: '/assets/the-matrix.jpg',
+    }
+  ]
   constructor() {}
   
   //definir la funcion de agregar publicaciones

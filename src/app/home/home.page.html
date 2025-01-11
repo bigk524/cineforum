@@ -1,6 +1,6 @@
 <ion-header>
-  <ion-toolbar >
-    <ion-title>
+  <ion-toolbar>
+    <ion-title style="background-color: #07c4c4;">
       <div class="header-container">
         <ion-img class="imagen" src="/assets/Logocine (1)-Photoroom.png"></ion-img>
       </div>
@@ -12,11 +12,23 @@
 <ion-content>
   <div class="banner">
     <h1 class="subtitulo">Bienvenido a CineForum</h1>
-    <p class="comparte">Comparte y descubre opiniones sobre tus películas favoritas.</p>
+    <p class="comparte"><em>Comparte y descubre opiniones sobre tus películas favoritas.</em></p>
   </div>
 
   <ion-searchbar placeholder="Buscar peliculas en el foro"></ion-searchbar>
-
+ 
+  <ion-list>
+    <ion-item *ngFor="let movie of movies">
+      <ion-thumbnail slot="start">
+        <ion-img [src]="movie.poster"></ion-img>
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{movie.title}}</h2>
+        <p>{{movie.description}}</p>
+      </ion-label>
+      <ion-button color="secondary" [routerLink]="['/home']">leer mas</ion-button>
+    </ion-item>
+  <!--
   <div class="card-container">
     <div class="card">
       <img src="/assets/bladerunner.jpg" alt="Imagen de la tarjeta" class="card-image">
@@ -55,7 +67,8 @@
         <ion-button color="secondary" [routerLink]="['/home']">leer mas</ion-button>
       </div>
     </div>
-
-  </div>
-
+     
+    </div>
+  -->
+  </ion-list>
 </ion-content>
