@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
 
 @Component({
@@ -14,6 +15,7 @@ export class LoginPage implements OnInit {
   constructor(
     private alertController: AlertController,
     private toastController: ToastController,
+    private router: Router
   ) { }
 
   async presentAlert(header: string, message: string) {
@@ -37,16 +39,21 @@ export class LoginPage implements OnInit {
   }
 
   validarCampos() {
-    if (this.user == 'José' && this.password == '123') {
-      this.presentAlert("Bienvenido", "Bienvenido, José!.");
+    if (this.user == 'admin' && this.password == 'admin') {
+      this.presentAlert("Bienvenido", "Bienvenido, Admin!");
+    } else if (this.user == 'admin' && this.password != 'admin') {
+      this.presentAlert("Error", "Contraseña incorrecta.");
+      return;
     } else {
-      this.presentToast("Credenciales inválidas");
+      this.presentToast("Bienvenido!");
     }
-  }
+    let navigationExtras = {
+      state: {
+        user: this.user
+      }
+    };
 
-  limpiarCampos() {
-    this.user = '';
-    this.password = '';
+    this.router.navigate(['/home'], navigationExtras);
   }
 
   ngOnInit() {

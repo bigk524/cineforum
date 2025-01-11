@@ -26,13 +26,12 @@
 
     <div class="btns">
       <ion-button expand="full" color="primary" (click)="validarCampos()">Ingresar</ion-button>
-      <ion-button expand="full" color="warning" (click)="limpiarCampos()">Limpiar</ion-button>
     </div>
     <br>
     <div style="text-align: center;">
-      <ion-router-link routerLink="/registro" style="color: blue; text-decoration: underline;">
-        ¿Ya tienes cuenta? Regístrate
-      </ion-router-link>
+      <a routerLink="/registro" style="color: blue; text-decoration: underline;">
+        ¿No tienes cuenta? Regístrate!
+      </a>
       <br><br>
       <ion-router-link routerLink="/forgot-password" style="color: blue; text-decoration: underline;">
         ¿Olvidaste tu contraseña?

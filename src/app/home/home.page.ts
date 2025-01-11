@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -7,12 +8,13 @@ import { Component } from '@angular/core';
   standalone: false,
 })
 export class HomePage {
+  user: string = '';
   movies = [
     {
       title: 'Blade Runner 2049',
       description: 'La secuela de Blade Runner de 1982',
       poster: '/assets/bladerunner.jpg',
-      id: '/blanerunner',
+      route: '/blanerunner',
     },
     {
       title: 'Deadpool 3',
@@ -35,7 +37,16 @@ export class HomePage {
       poster: '/assets/the-matrix.jpg',
     }
   ]
-  constructor() {}
+  constructor(
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+  ) {
+    this.activatedRoute.queryParams.subscribe(params => {
+      if (this.router.getCurrentNavigation()?.extras.state) {
+        this.user = this.router.getCurrentNavigation()?.extras?.state?.['user'];
+      }
+    })
+  }
   
   //definir la funcion de agregar publicaciones
   addPost() {

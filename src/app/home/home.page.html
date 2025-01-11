@@ -13,6 +13,9 @@
   <div class="banner">
     <h1 class="subtitulo">Bienvenido a CineForum</h1>
     <p class="comparte"><em>Comparte y descubre opiniones sobre tus películas favoritas.</em></p>
+    <ion-button color="secondary" [routerLink]="['/admin-panel']" *ngIf="user == 'admin'">
+      Administrar
+    </ion-button>
   </div>
 
   <ion-searchbar placeholder="Buscar peliculas en el foro"></ion-searchbar>
@@ -26,49 +29,8 @@
         <h2>{{movie.title}}</h2>
         <p>{{movie.description}}</p>
       </ion-label>
-      <ion-button color="secondary" [routerLink]="[movie.id]">leer mas</ion-button>
+      <ion-button color="secondary" [routerLink]="[movie.route]">leer mas</ion-button>
     </ion-item>
-  <!--
-  <div class="card-container">
-    <div class="card">
-      <img src="/assets/bladerunner.jpg" alt="Imagen de la tarjeta" class="card-image">
-      <div class="card-content">
-        <h3 class="card-title">Blade Runnner 2049</h3>
-        <p class="card-description">La secuela de blade runner de 1982</p>
-        <ion-button color="secondary" [routerLink]="['/home']">leer mas</ion-button>
-        
-      </div>
-    </div>
 
-    <div class="card">
-      <img src="/assets/deadpool.jpg" alt="Imagen de la tarjeta" class="card-image">
-      <div class="card-content">
-        <h3 class="card-title">Deadpool 3</h3>
-        <p class="card-description">Deadpool deberá aliarse con Wolverine para salvar su universo y evitar la
-          desaparición de su galaxia</p>
-        <ion-button color="secondary" [routerLink]="['/home']">leer mas</ion-button>
-      </div>
-    </div>
-
-    <div class="card">
-      <img src="/assets/The-fall-guy.jpg" alt="Imagen de la tarjeta" class="card-image">
-      <div class="card-content">
-        <h3 class="card-title">Profesión Peligro</h3>
-        <p class="card-description">Ryan gosling siendo un doble de riesgo de una pelicula en una pelicula</p>
-        <ion-button color="secondary" [routerLink]="['/home']">leer mas</ion-button>
-      </div>
-    </div>
-
-    <div class="card">
-      <img src="/assets/unnamed.png" alt="Imagen de la tarjeta" class="card-image">
-      <div class="card-content">
-        <h3 class="card-title">Ready Player One</h3>
-        <p class="card-description">Un desafio en un juego termina siendo algo de vida o muerte</p>
-        <ion-button color="secondary" [routerLink]="['/home']">leer mas</ion-button>
-      </div>
-    </div>
-     
-    </div>
-  -->
   </ion-list>
 </ion-content>
