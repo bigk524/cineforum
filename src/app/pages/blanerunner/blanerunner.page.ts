@@ -58,6 +58,11 @@ export class BlanerunnerPage implements OnInit {
         this.comments.splice(i, 1);
       }
     }
+<<<<<<< HEAD
+=======
+
+    this.presentToast("Publicación eliminada");
+>>>>>>> 9d9507c (Banneo de usuarios)
   }
 
   ngOnInit() {
