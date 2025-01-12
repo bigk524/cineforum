@@ -13,13 +13,13 @@ export class HomePage {
   movies = [
     {
       title: "Oppenheimer",
-      description: "La historia de J. Robert Oppenheimer, el científico que dirigió el proyecto Manhattan",
+      description: "La historia de J. Robert Oppenheimer, el científico",
       poster: "/assets/images.jpg",
       route: "/oppenheimer"
     },
     {
       title: "Spider-Man: Across the Spider-Verse",
-      description: " Miles Morales se catapulta a través del multiverso y se encuentra con la Sociedad Araña, un equipo de Spider-People que protege el multiverso.",
+      description: " Miles Morales se catapulta a través del multiverso y se encuentra con la Sociedad Araña",
       poster: "/assets/Across-the-Spider-Verse-2023.jpg",
       route: "/spider-man"
     },
