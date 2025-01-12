@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
 
 @Component({
@@ -8,6 +9,7 @@ import { AlertController, ToastController } from '@ionic/angular';
   standalone: false
 })
 export class BlanerunnerPage implements OnInit {
+  user: string = '';
   comments = [
     {
       id: '1',
@@ -28,8 +30,16 @@ export class BlanerunnerPage implements OnInit {
   ];
   constructor(
     private alertController: AlertController,
-    private toastController: ToastController
-  ) { }
+    private toastController: ToastController,
+    private router: Router,
+    private activatedRoute: ActivatedRoute
+  ) { 
+    this.activatedRoute.queryParams.subscribe(params => {
+      if (this.router.getCurrentNavigation()?.extras.state) {
+        this.user = this.router.getCurrentNavigation()?.extras?.state?.['user'];
+      }
+    })
+  }
 
   async presentAlert(header: string, message: string) {
     const alert = await this.alertController.create({

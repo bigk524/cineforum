@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, MenuController, ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-registro',
@@ -19,7 +19,10 @@ export class RegistroPage implements OnInit {
     private alertController: AlertController,
     private toastController: ToastController,
     private router: Router,
-  ) { }
+    private menuCtrl: MenuController,
+  ) {
+    this.ionViewWillOpen();
+   }
 
   async presentAlert(header: string, message: string) {
     const alert = await this.alertController.create({
@@ -67,6 +70,11 @@ export class RegistroPage implements OnInit {
     this.router.navigate(['/login']);
   }
 
+  ionViewWillOpen() {
+    this.menuCtrl.enable(false);
+    this.menuCtrl.swipeGesture(false);
+  }
+  
   ngOnInit() {
   }
 
