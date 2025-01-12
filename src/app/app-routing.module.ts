@@ -51,6 +51,18 @@ const routes: Routes = [
     path: 'crear-publicacion',
     loadChildren: () => import('./pages/crear-publicacion/crear-publicacion.module').then( m => m.CrearPublicacionPageModule)
   },
+  {
+    path: 'oppenheimer',
+    loadChildren: () => import('./pages/oppenheimer/oppenheimer.module').then( m => m.OppenheimerPageModule)
+  },
+  {
+    path: 'spider-man',
+    loadChildren: () => import('./pages/spider-man/spider-man.module').then( m => m.SpiderManPageModule)
+  },
+  {
+    path: 'barbie',
+    loadChildren: () => import('./pages/barbie/barbie.module').then( m => m.BarbiePageModule)
+  },
   
  
 
