@@ -56,6 +56,11 @@ export class RegistroPage implements OnInit {
       return;
     }
 
+    if (!/^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/.test(this.correo)) {
+      this.presentAlert("Error", "Por favor, ingrese una dirección de correo electrónico válida.");
+      return;
+    }
+
     if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(this.password)) {
       this.presentAlert('Error','La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un caracter especial');
       return;

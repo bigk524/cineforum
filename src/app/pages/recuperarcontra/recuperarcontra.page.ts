@@ -43,6 +43,11 @@ export class RecuperarcontraPage implements OnInit {
       return;
     }
 
+    if (!/^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/.test(this.email)) {
+      this.presentAlert("Error", "Por favor, ingrese una dirección de correo electrónico válida.");
+      return;
+    }
+
     this.presentToast("Correo enviado!");
     this.router.navigate(['/login']);
   }
