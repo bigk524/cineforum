@@ -29,7 +29,7 @@
         <h2>{{movie.title}}</h2>
         <p>{{movie.description}}</p>
       </ion-label>
-      <ion-button color="secondary" [routerLink]="[movie.route]">leer mas</ion-button>
+      <ion-button color="secondary" (click)="routeToMovie(movie.route)">leer mas</ion-button>
     </ion-item>
 
   </ion-list>

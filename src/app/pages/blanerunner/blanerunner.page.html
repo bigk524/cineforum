@@ -50,6 +50,11 @@
           <hr>
           <span>{{comment.reactions}}</span>
         </div>
+        <div class="ban-post">
+          <hr>
+          <ion-input placeholder="Razón de banneo"></ion-input>
+          <ion-button color="danger" fill="clear" size="small" (click)="banPost(comment.id)">Banear</ion-button>
+        </div>
       </ion-label>
       </ion-item>
     </ion-list>

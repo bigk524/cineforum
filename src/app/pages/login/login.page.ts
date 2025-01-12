@@ -44,6 +44,9 @@ export class LoginPage implements OnInit {
     } else if (this.user == 'admin' && this.password != 'admin') {
       this.presentAlert("Error", "Contraseña incorrecta.");
       return;
+    } else if (this.user == '' && this.password == '') {
+      this.presentAlert("Error", "Por favor, ingrese su usuario y contraseña.");
+      return;
     } else {
       this.presentToast("Bienvenido!");
     }

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AlertController, ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-blanerunner',
@@ -9,6 +10,7 @@ import { Component, OnInit } from '@angular/core';
 export class BlanerunnerPage implements OnInit {
   comments = [
     {
+      id: '1',
       userName: 'Matias Ramirez',
       userPic: '/assets/lego1.jpg',
       date: '2025-01-11',
@@ -16,14 +18,47 @@ export class BlanerunnerPage implements OnInit {
       reactions: '14'
     },
     {
+      id: '2',
       userName: 'Pepe Torres',
       userPic: '/assets/lego2.jpg',
       date: '2025-01-11',
       content: "la original era mejor",
       reactions: '0',
     }
-  ]
-  constructor() { }
+  ];
+  constructor(
+    private alertController: AlertController,
+    private toastController: ToastController
+  ) { }
+
+  async presentAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header: header,
+      message: message,
+      buttons: ['Ok']
+    });
+
+    await alert.present();
+  }
+
+  async presentToast(msg: string) {
+    const toast = await this.toastController.create({
+      message: msg,
+      duration: 1500,
+      position: 'bottom'
+    });
+
+    await toast.present();
+  }
+
+  banPost(id: any) {
+
+    for (let i = 0; i < this.comments.length; i++) {
+      if (this.comments[i].id == id) {
+        this.comments.splice(i, 1);
+      }
+    }
+  }
 
   ngOnInit() {
   }

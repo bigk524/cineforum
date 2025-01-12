@@ -47,6 +47,15 @@ export class HomePage {
       }
     })
   }
+
+  routeToMovie(route: any) {
+    let navigationExtras = {
+      state: {
+        user: this.user
+      }
+    }
+    this.router.navigate([route], navigationExtras);
+  }
   
   //definir la funcion de agregar publicaciones
   addPost() {
