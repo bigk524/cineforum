@@ -1,0 +1,48 @@
+.imagen {
+    width: 100%;
+    max-width: 70px;
+  }
+  
+  .header-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 60px;
+  }
+
+.not-found-container {
+    --background: #9b9b9b;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+  
+  .error-content {
+    text-align: center;
+  }
+  
+  .error-image {
+    width: 100%;
+    max-width: 420px;
+    margin-bottom: 50px;
+  }
+  
+  h1 {
+    font-size: 1.8rem;
+    font-weight: bold;
+  }
+  
+  p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+  }
+  
+  ion-button {
+    --background: #ffcc00;
+    --color: #1c1c1c;
+    font-weight: bold;
+  }
+  

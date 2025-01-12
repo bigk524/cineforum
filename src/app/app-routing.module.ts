@@ -75,6 +75,11 @@ const routes: Routes = [
     path: 'opciones/seguridad',
     loadChildren: () => import('./pages/opciones-seguridad/opciones-seguridad.module').then( m => m.OpcionesSeguridadPageModule)
   },
+  {
+    path: '**',
+    loadChildren: () => import('./pages/notfound/notfound.module').then( m => m.NotfoundPageModule)
+  },
+
   
  
 
