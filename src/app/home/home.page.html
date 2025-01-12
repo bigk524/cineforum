@@ -13,12 +13,14 @@
   <div class="banner">
     <h1 class="subtitulo">Bienvenido a CineForum</h1>
     <p class="comparte"><em>Comparte y descubre opiniones sobre tus películas favoritas.</em></p>
+    <ion-searchbar placeholder="Buscar peliculas en el foro"></ion-searchbar>
     <ion-button color="secondary" [routerLink]="['/admin-panel']" *ngIf="user == 'admin'">
       Administrar
     </ion-button>
+    <ion-button color="secondary" [routerLink]="['/admin-panel']" *ngIf="user == 'admin'">
+      Agregar película
+    </ion-button>
   </div>
-
-  <ion-searchbar placeholder="Buscar peliculas en el foro"></ion-searchbar>
  
   <ion-list>
     <ion-item *ngFor="let movie of movies">

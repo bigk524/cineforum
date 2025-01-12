@@ -47,6 +47,10 @@ const routes: Routes = [
     path: 'posts-baneados',
     loadChildren: () => import('./pages/posts-baneados/posts-baneados.module').then( m => m.PostsBaneadosPageModule)
   },
+  {
+    path: 'crear-publicacion',
+    loadChildren: () => import('./pages/crear-publicacion/crear-publicacion.module').then( m => m.CrearPublicacionPageModule)
+  },
   
  
 
