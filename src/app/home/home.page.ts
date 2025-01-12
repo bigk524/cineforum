@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -40,12 +41,19 @@ export class HomePage {
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
+    private menuCtrl: MenuController
   ) {
+    this.ionViewWillOpen();
     this.activatedRoute.queryParams.subscribe(params => {
       if (this.router.getCurrentNavigation()?.extras.state) {
         this.user = this.router.getCurrentNavigation()?.extras?.state?.['user'];
       }
     })
+  }
+
+  ionViewWillOpen() {
+    this.menuCtrl.enable(true);
+    this.menuCtrl.swipeGesture(true);
   }
 
   routeToMovie(route: any) {
