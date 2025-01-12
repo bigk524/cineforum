@@ -1,13 +1,78 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Barbie</ion-title>
+    <ion-title style="background-color: #07c4c4;">
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+        <ion-back-button></ion-back-button>
+      </ion-buttons>
+      <div class="header-container">
+        <ion-img class="imagen" src="/assets/Logocine (1)-Photoroom.png"></ion-img>
+      </div>
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Barbie</ion-title>
+      <ion-title size="large"></ion-title>
     </ion-toolbar>
   </ion-header>
-</ion-content>
+
+  <div class="movie-container">
+    <ion-card>
+      <div class="movie-content">
+        <h2>Barbie: The Movie</h2>
+        <ion-img class="movie-poster" src="/assets/barbie-info.jpg"></ion-img>
+        <div class="movie-info">
+          <p><strong>Año:</strong> 2023</p>
+          <p><strong>Director:</strong>
+
+            Greta Gerwig</p>
+          <p><strong>Actores principales:</strong>
+            Margot Robbie,
+            Ryan Gosling,
+            America Ferrera</p>
+          <p><strong>Trama:</strong> cuenta la historia de una muñeca Barbie que es expulsada de Barbieland por no
+            cumplir con los estándares de perfección y debe viajar al mundo real</p>
+        </div>
+      </div>
+    </ion-card>
+    <ion-list class="movie-comments">
+      <ion-item *ngFor="let comment of comments">
+        <ion-thumbnail slot="start">
+          <ion-img [src]="comment.userPic"></ion-img>
+        </ion-thumbnail>
+        <ion-label>
+          <h2>{{comment.userName}}</h2>
+          <p>{{comment.date}}</p>
+          <p>{{comment.content}}</p>
+
+          <div class="comment-react">
+            <button>
+              <svg fill="none" viewBox="0 0 24 24" height="16" width="16" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#707277" stroke-linecap="round" stroke-width="2" stroke="#707277"
+                  d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z">
+                </path>
+              </svg>
+            </button>
+            <hr>
+            <span>{{comment.reactions}}</span>
+          </div>
+          <div class="ban-post" *ngIf="user == 'admin'">
+            <hr>
+            <ion-input placeholder="Razón de banneo"></ion-input>
+            <ion-button color="danger" fill="clear" size="small" (click)="banPost(comment.id)">Banear</ion-button>
+          </div>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+    <ion-card class="text-box">
+      <ion-card-content>
+        <ion-item>
+          <ion-textarea placeholder="Responder"></ion-textarea>
+        </ion-item>
+        <ion-button expand="block">Enviar</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
