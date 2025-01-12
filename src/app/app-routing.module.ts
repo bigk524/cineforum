@@ -26,10 +26,21 @@ const routes: Routes = [
   {
     path: 'blanerunner',
     loadChildren: () => import('./pages/blanerunner/blanerunner.module').then( m => m.BlanerunnerPageModule)
-  },  {
+  },
+  {
     path: 'admin-panel',
     loadChildren: () => import('./pages/admin-panel/admin-panel.module').then( m => m.AdminPanelPageModule)
-  }
+  },
+  {
+    path: 'recuperarcontra',
+    loadChildren: () => import('./pages/recuperarcontra/recuperarcontra.module').then( m => m.RecuperarcontraPageModule)
+  },
+  {
+    path: 'tendencias',
+    loadChildren: () => import('./pages/tendencias/tendencias.module').then( m => m.TendenciasPageModule)
+  },
+  
+ 
 
 
 ];

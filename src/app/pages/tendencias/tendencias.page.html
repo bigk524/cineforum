@@ -1,0 +1,26 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title style="background-color: #07c4c4;">
+      <div class="header-container">
+        <ion-img class="imagen" src="/assets/Logocine (1)-Photoroom.png"></ion-img>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-content>
+    <ion-list>
+      <ion-card *ngFor="let pelicula of peliculasEnTendencia">
+        <img [src]="pelicula.imagen" alt="{{ pelicula.titulo }}">
+        <ion-card-header>
+          <ion-card-title>{{ pelicula.titulo }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>🎬 Comentarios: {{ pelicula.comentarios }}</p>
+          <p>⭐ Calificación: {{ pelicula.calificacion }} / 5</p>
+        </ion-card-content>
+      </ion-card>
+    </ion-list>
+  </ion-content>
+</ion-content>
