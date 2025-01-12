@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title style="background-color: #07c4c4;">
+      <div class="header-container">
+        <ion-img class="imagen" src="/assets/Logocine (1)-Photoroom.png"></ion-img>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="profile-container">
+    <ion-avatar class="profile-picture">
+      <img src="assets/lego3.jpg" alt="Profile Picture">
+    </ion-avatar>
+
+    <h2 class="username">Pepe Torres</h2>
+
+    <div class="bio-section">
+      <p>Soy Pepe, un fanático de las películas.</p>
+    </div>
+
+    <ion-list class="posts-list">
+      <ion-list-header>
+        <h3>Posts</h3>
+      </ion-list-header>
+      <ion-item *ngFor="let post of posts">
+        <ion-label>
+          <h4>{{post.title}}</h4>
+          <p>{{post.content}}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ion-button expand="block" color="warning" class="banned-posts-btn">
+      Ver posts baneados
+      <ion-icon name="warning" slot="end"></ion-icon>
+    </ion-button>
+  </div>
+</ion-content>

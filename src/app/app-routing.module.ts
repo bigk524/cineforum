@@ -39,6 +39,14 @@ const routes: Routes = [
     path: 'tendencias',
     loadChildren: () => import('./pages/tendencias/tendencias.module').then( m => m.TendenciasPageModule)
   },
+  {
+    path: 'perfil',
+    loadChildren: () => import('./pages/perfil/perfil.module').then( m => m.PerfilPageModule)
+  },
+  {
+    path: 'posts-baneados',
+    loadChildren: () => import('./pages/posts-baneados/posts-baneados.module').then( m => m.PostsBaneadosPageModule)
+  },
   
  
 
