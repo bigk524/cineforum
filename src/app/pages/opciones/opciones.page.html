@@ -1,0 +1,40 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title style="background-color: #07c4c4;">
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+        <ion-back-button></ion-back-button>
+      </ion-buttons>
+      <div class="header-container">
+        <ion-img class="imagen" src="/assets/Logocine (1)-Photoroom.png"></ion-img>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content [fullscreen]="true">
+  <div>
+    <h2 class="titulo">Opciones</h2>
+    <ion-list>
+      <ion-item>
+        <ion-label>Perfil</ion-label>
+        <ion-button fill="clear" slot="end" routerLink="/opciones/perfil">
+          <ion-icon slot="icon-only" name="arrow-forward"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <ion-item>
+        <ion-label>Seguridad</ion-label>
+        <ion-button fill="clear" slot="end" routerLink="/opciones/seguridad">
+          <ion-icon slot="icon-only" name="arrow-forward"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <ion-item>
+        <ion-label>Salir</ion-label>
+        <ion-button fill="clear" slot="end" (click)="logout()">
+          <ion-icon slot="icon-only" name="arrow-forward"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>

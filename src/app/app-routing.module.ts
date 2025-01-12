@@ -63,6 +63,18 @@ const routes: Routes = [
     path: 'barbie',
     loadChildren: () => import('./pages/barbie/barbie.module').then( m => m.BarbiePageModule)
   },
+  {
+    path: 'opciones',
+    loadChildren: () => import('./pages/opciones/opciones.module').then( m => m.OpcionesPageModule)
+  },
+  {
+    path: 'opciones/perfil',
+    loadChildren: () => import('./pages/opciones-perfil/opciones-perfil.module').then( m => m.OpcionesPerfilPageModule)
+  },
+  {
+    path: 'opciones/seguridad',
+    loadChildren: () => import('./pages/opciones-seguridad/opciones-seguridad.module').then( m => m.OpcionesSeguridadPageModule)
+  },
   
  
 

@@ -1,0 +1,32 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title style="background-color: #07c4c4;">
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+        <ion-back-button></ion-back-button>
+      </ion-buttons>
+      <div class="header-container">
+        <ion-img class="imagen" src="/assets/Logocine (1)-Photoroom.png"></ion-img>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content [fullscreen]="true">
+  <div class="opciones-perfil">
+    <h2 class="titulo">Cambiar Contraseña</h2>
+    <ion-list class="opciones-perfil-list">
+      <ion-item>
+        <ion-input label="Contraseña Actual" type="password" [(ngModel)]="oldPassword"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input label="Contraseña Nueva" type="password" [(ngModel)]="newPassword"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input label="Confirme Contraseña Nueva" type="password" [(ngModel)]="newPasswordTest"></ion-input>
+      </ion-item>
+      <ion-button expand="block" color="primary">Cambiar Contraseña</ion-button>
+    </ion-list>
+  </div>
+</ion-content>
