@@ -12,6 +12,24 @@ export class HomePage {
   user: string = '';
   movies = [
     {
+      title: "Oppenheimer",
+      description: "La historia de J. Robert Oppenheimer, el científico que dirigió el proyecto Manhattan",
+      poster: "/assets/images.jpg",
+      route: "/oppenheimer"
+    },
+    {
+      title: "Spider-Man: Across the Spider-Verse",
+      description: " Miles Morales se catapulta a través del multiverso y se encuentra con la Sociedad Araña, un equipo de Spider-People que protege el multiverso.",
+      poster: "/assets/Across-the-Spider-Verse-2023.jpg",
+      route: "/spider-man"
+    },
+    {
+      title: "Barbie",
+      description: "La película de Barbie",
+      poster: "/assets/maxresdefault.jpg",
+      route: "/barbie"
+    },
+    {
       title: 'Blade Runner 2049',
       description: 'La secuela de Blade Runner de 1982',
       poster: '/assets/bladerunner.jpg',
