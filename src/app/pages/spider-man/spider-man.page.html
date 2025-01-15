@@ -41,6 +41,21 @@
         </div>
       </div>
     </ion-card>
+    <ion-card class="rating-card">
+      <ion-card-header>
+        <ion-card-title>Califica esta película</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="stars">
+          <ion-icon *ngFor="let star of stars; let i = index" 
+                    [name]="i < userRating ? 'star' : 'star-outline'" 
+                    (click)="rateMovie(i + 1)">
+          </ion-icon>
+        </div>
+        <p *ngIf="userRating">Tu calificación: {{ userRating }} estrellas</p>
+        <p><strong>Calificación promedio:</strong> {{ averageRating | number:'1.1-1' }}/5</p>
+      </ion-card-content>
+    </ion-card>
     <ion-list class="movie-comments">
       <ion-item *ngFor="let comment of comments">
         <ion-thumbnail slot="start">

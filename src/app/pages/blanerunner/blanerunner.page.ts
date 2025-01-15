@@ -9,6 +9,11 @@ import { AlertController, ToastController } from '@ionic/angular';
   standalone: false
 })
 export class BlanerunnerPage implements OnInit {
+  userRating: number = 0;
+  stars: number[] = [1, 2, 3, 4, 5];
+  ratings: number[] = [4, 5, 3, 5, 4]; // Ejemplo de calificaciones de otros usuarios
+  averageRating: number = 0;
+
   newComment: string = '';
   errorMenssage: string = '';
 
@@ -92,10 +97,22 @@ export class BlanerunnerPage implements OnInit {
     console.log('Comentario enviado:', this.newComment);
     this.newComment = ''; // Limpiar el campo después de enviar
   }
-  ngOnInit() {
-  
+   // ⭐ Nueva función para calificar la película
+   rateMovie(rating: number) {
+    this.userRating = rating;
+    this.ratings.push(rating);
+    this.calculateAverageRating();
+  }
+
+  // ⭐ Cálculo del promedio de calificación
+  calculateAverageRating() {
+    const total = this.ratings.reduce((sum, rate) => sum + rate, 0);
+    this.averageRating = this.ratings.length ? total / this.ratings.length : 0;
+  }
+
+  ngOnInit() {}
 }
-}
+
 
 
 
