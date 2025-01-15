@@ -9,6 +9,8 @@ import { AlertController, ToastController } from '@ionic/angular';
   standalone: false,
 })
 export class OppenheimerPage implements OnInit {
+  newComment: string = '';
+  errorMessage: string = '';
 
   user: string = '';
   comments = [
@@ -73,8 +75,25 @@ export class OppenheimerPage implements OnInit {
         this.presentToast("Publicación eliminada");
       }
     
-      ngOnInit() {
+      validateComment() {
+        if (!this.newComment.trim()) {
+          this.errorMessage = 'El comentario no puede estar vacío.';
+        } else if (this.newComment.length < 5) {
+          this.errorMessage = 'El comentario debe tener al menos 5 caracteres.';
+        } else {
+          this.errorMessage = '';
+        }
       }
     
-    }
+      sendComment() {
+        this.validateComment();
+        if (this.errorMessage) return; // Evita enviar si hay error
     
+        // Aquí iría la lógica para enviar el comentario
+        console.log('Comentario enviado:', this.newComment);
+        this.newComment = ''; // Limpiar el campo después de enviar
+      }
+      ngOnInit() {
+      
+    }
+    }

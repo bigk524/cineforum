@@ -9,6 +9,9 @@ import { AlertController, ToastController } from '@ionic/angular';
   standalone: false
 })
 export class BlanerunnerPage implements OnInit {
+  newComment: string = '';
+  errorMenssage: string = '';
+
   user: string = '';
   comments = [
     {
@@ -33,7 +36,7 @@ export class BlanerunnerPage implements OnInit {
     private toastController: ToastController,
     private router: Router,
     private activatedRoute: ActivatedRoute
-  ) { 
+  ) {
     this.activatedRoute.queryParams.subscribe(params => {
       if (this.router.getCurrentNavigation()?.extras.state) {
         this.user = this.router.getCurrentNavigation()?.extras?.state?.['user'];
@@ -71,8 +74,29 @@ export class BlanerunnerPage implements OnInit {
 
     this.presentToast("Publicación eliminada");
   }
-
-  ngOnInit() {
+  validateComment() {
+    if (!this.newComment.trim()) {
+      this.errorMenssage = 'El comentario no puede estar vacío.';
+    } else if (this.newComment.length < 5) {
+      this.errorMenssage = 'El comentario debe tener al menos 5 caracteres.';
+    } else {
+      this.errorMenssage = '';
+    }
   }
 
+  sendComment() {
+    this.validateComment();
+    if (this.errorMenssage) return; // Evita enviar si hay error
+
+    // Aquí iría la lógica para enviar el comentario
+    console.log('Comentario enviado:', this.newComment);
+    this.newComment = ''; // Limpiar el campo después de enviar
+  }
+  ngOnInit() {
+  
 }
+}
+
+
+
+
