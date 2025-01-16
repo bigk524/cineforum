@@ -15,7 +15,7 @@
 <ion-content [fullscreen]="true">
   <div class="profile-container">
     <ion-avatar class="profile-picture">
-      <img src="assets/lego3.jpg" alt="Profile Picture">
+      <img [src]="imagenPerfil ? imagenPerfil : 'assets/lego3.jpg'" alt="Profile Picture">
     </ion-avatar>
 
     <h2 class="username">Pepe Torres</h2>
@@ -30,8 +30,8 @@
       </ion-list-header>
       <ion-item *ngFor="let post of posts">
         <ion-label>
-          <h4>{{post.title}}</h4>
-          <p>{{post.content}}</p>
+          <h4>{{ post.title }}</h4>
+          <p>{{ post.content }}</p>
         </ion-label>
       </ion-item>
     </ion-list>
