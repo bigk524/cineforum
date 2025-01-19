@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, MenuController, ToastController } from '@ionic/angular';
+import { DbService } from 'src/app/services/db.service';
 
 @Component({
   selector: 'app-login',
@@ -17,6 +18,7 @@ export class LoginPage implements OnInit {
     private toastController: ToastController,
     private router: Router,
     private menuCtrl: MenuController,
+    private db: DbService,
    ) { 
     this.ionViewWillOpen();
    }
@@ -39,6 +41,17 @@ export class LoginPage implements OnInit {
     });
 
     await toast.present();
+  }
+
+  async login() {
+    const user = await this.db.buscarUsuario(this.user, this.password);
+
+    if (user) {
+      this.presentToast('Bienvenido!');
+      this.router.navigate(['/home']);
+    } else {
+      this.presentAlert('Error', 'Usuario o contraseña incorrecta');
+    }
   }
 
   validarCampos() {

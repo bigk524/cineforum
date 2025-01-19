@@ -21,7 +21,8 @@ export class OpcionesPerfilPage implements OnInit {
       quality: 90,
       destinationType: this.camera.DestinationType.DATA_URL,
       encodingType: this.camera.EncodingType.JPEG,
-      mediaType: this.camera.MediaType.PICTURE
+      mediaType: this.camera.MediaType.PICTURE,
+      allowEdit: false,
     };
 
     this.camera.getPicture(opciones).then((imagenData) => {
