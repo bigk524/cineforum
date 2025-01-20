@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
+import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { AlertController, MenuController, ToastController } from '@ionic/angular';
 import { DbService } from 'src/app/services/db.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +21,8 @@ export class LoginPage implements OnInit {
     private router: Router,
     private menuCtrl: MenuController,
     private db: DbService,
+    private userService: UserService,
+    private nativeStorage: NativeStorage
    ) { 
     this.ionViewWillOpen();
    }
@@ -45,11 +49,21 @@ export class LoginPage implements OnInit {
 
   async login() {
     const user = await this.db.buscarUsuario(this.user, this.password);
-
     if (user) {
+      console.log('Login exitoso:', user);
       this.presentToast('Bienvenido!');
-      this.router.navigate(['/home']);
+      await this.userService.login(user);
+
+      const navigationExtras: NavigationExtras = {
+        state: {
+          user: user,
+        }
+      };
+      
+      this.nativeStorage.setItem('rol', user.rol == 1 ? 'admin' : 'usuario');
+      this.router.navigate(['/home'], navigationExtras);
     } else {
+      console.log('Login falló');
       this.presentAlert('Error', 'Usuario o contraseña incorrecta');
     }
   }
