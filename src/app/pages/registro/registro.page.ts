@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, MenuController, ToastController } from '@ionic/angular';
+import { MenuController, ToastController } from '@ionic/angular';
 import { DbService } from 'src/app/services/db.service';
 import { Usuario } from 'src/app/services/usuario';
 
@@ -9,7 +9,6 @@ import { Usuario } from 'src/app/services/usuario';
   templateUrl: './registro.page.html',
   styleUrls: ['./registro.page.scss'],
   standalone: false
-
 })
 export class RegistroPage implements OnInit {
   name: string = '';
@@ -17,24 +16,19 @@ export class RegistroPage implements OnInit {
   password: string = '';
   passwordTest: string = '';
 
+  // Variables para errores
+  errorName: string = '';
+  errorCorreo: string = '';
+  errorPassword: string = '';
+  errorPasswordTest: string = '';
+
   constructor(
-    private alertController: AlertController,
     private toastController: ToastController,
     private router: Router,
     private menuCtrl: MenuController,
-    private dbService: DbService,
+    private dbService: DbService
   ) {
     this.ionViewWillOpen();
-  }
-
-  async presentAlert(header: string, message: string) {
-    const alert = await this.alertController.create({
-      header: header,
-      message: message,
-      buttons: ['Ok']
-    });
-
-    await alert.present();
   }
 
   async presentToast(msg: string) {
@@ -43,37 +37,47 @@ export class RegistroPage implements OnInit {
       duration: 1500,
       position: 'bottom'
     });
-
     await toast.present();
   }
 
   async validar() {
-    if (this.name == '' || this.correo == '' || this.password == '' || this.passwordTest == '') {
-      console.log(this.name, this.correo, this.password, this.passwordTest);
-      this.presentAlert('Error', 'Todos los campos son obligatorios');
+    // Reiniciar errores
+    this.errorName = '';
+    this.errorCorreo = '';
+    this.errorPassword = '';
+    this.errorPasswordTest = '';
+
+    // Validaciones básicas
+    if (!this.name) {
+      this.errorName = 'El nombre es obligatorio';
+    } else if (this.name.length < 3) {
+      this.errorName = 'El nombre debe tener al menos 3 caracteres';
+    }
+
+    if (!this.correo) {
+      this.errorCorreo = 'El correo es obligatorio';
+    } else if (!/^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(this.correo)) {
+      this.errorCorreo = 'Correo electrónico no válido';
+    }
+
+    if (!this.password) {
+      this.errorPassword = 'La contraseña es obligatoria';
+    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$.!%*?&])[A-Za-z\d@$.!%*?&]{8,}$/.test(this.password)) {
+      this.errorPassword = 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial';
+    }
+
+    if (!this.passwordTest) {
+      this.errorPasswordTest = 'Debe confirmar su contraseña';
+    } else if (this.password !== this.passwordTest) {
+      this.errorPasswordTest = 'Las contraseñas no coinciden';
+    }
+
+    // Si hay errores, no continuar
+    if (this.errorName || this.errorCorreo || this.errorPassword || this.errorPasswordTest) {
       return;
     }
 
-    if (this.name.length < 3) {
-      this.presentAlert('Error', 'El nombre debe tener al menos 3 caracteres');
-      return;
-    }
-
-    if (!/^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/.test(this.correo)) {
-      this.presentAlert("Error", "Por favor, ingrese una dirección de correo electrónico válida.");
-      return;
-    }
-
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$.!%*?&])[A-Za-z\d@$.!%*?&]{8,}$/.test(this.password)) {
-      this.presentAlert('Error', 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un caracter especial');
-      return;
-    }
-
-    if (this.password !== this.passwordTest) {
-      this.presentAlert('Error', 'Las contraseñas no coinciden');
-      return;
-    }
-
+    // Crear objeto usuario y registrar
     const usuario: Usuario = {
       nombre: this.name,
       email: this.correo,
@@ -85,20 +89,18 @@ export class RegistroPage implements OnInit {
     };
 
     await this.dbService.registarUsuario(usuario)
-    .then(_ => {
-      this.presentToast('Usuario registrado');
-      this.router.navigate(['/login']);
-    }).catch(e => {
-      const mensajeEmail = "Ya existe una cuenta registrada con ese correo.";
-      const mensajeNombre = "Ya existe una cuenta con ese nombre.";
-      if (e.emailDuplicado && e.nombreDuplicado) {
-        this.presentAlert("Error en el registro", `${mensajeEmail}\n${mensajeNombre}`);
-      } else if (e.emailDuplicado) {
-        this.presentAlert("Error en el registro", mensajeEmail);
-      } else {
-        this.presentAlert("Error en el registro", mensajeNombre);
-      }
-    })
+      .then(_ => {
+        this.presentToast('Usuario registrado');
+        this.router.navigate(['/login']);
+      })
+      .catch(e => {
+        if (e.emailDuplicado) {
+          this.errorCorreo = 'Ya existe una cuenta registrada con ese correo.';
+        }
+        if (e.nombreDuplicado) {
+          this.errorName = 'Ya existe una cuenta con ese nombre.';
+        }
+      });
   }
 
   ionViewWillOpen() {
@@ -106,7 +108,5 @@ export class RegistroPage implements OnInit {
     this.menuCtrl.swipeGesture(false);
   }
 
-  ngOnInit() {
-  }
-
+  ngOnInit() { }
 }

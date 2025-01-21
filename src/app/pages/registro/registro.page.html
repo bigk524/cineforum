@@ -14,24 +14,38 @@
 
 <ion-content [fullscreen]="true">
   <div class="registro">
-    <h1 class="subtitulo">Registrate</h1>
+    <h1 class="subtitulo">Regístrate</h1>
+
+    <!-- Campo: Nombre de usuario -->
     <ion-item>
       <ion-label position="floating">Nombre de usuario</ion-label>
-      <ion-input [(ngModel)]="name"></ion-input>
+      <ion-input [(ngModel)]="name" name="name"></ion-input>
     </ion-item>
+    <label *ngIf="errorName" class="error">{{ errorName }}</label>
+
+    <!-- Campo: Correo -->
     <ion-item>
       <ion-label position="floating">Correo</ion-label>
-      <ion-input [(ngModel)]="correo"></ion-input>
+      <ion-input [(ngModel)]="correo" name="correo"></ion-input>
     </ion-item>
+    <label *ngIf="errorCorreo" class="error">{{ errorCorreo }}</label>
+
+    <!-- Campo: Contraseña -->
     <ion-item>
       <ion-label position="floating">Contraseña</ion-label>
-      <ion-input type="password" [(ngModel)]="password"></ion-input>
+      <ion-input type="password" [(ngModel)]="password" name="password"></ion-input>
     </ion-item>
+    <label *ngIf="errorPassword" class="error">{{ errorPassword }}</label>
+
+    <!-- Campo: Repetir contraseña -->
     <ion-item>
       <ion-label position="floating">Repetir contraseña</ion-label>
-      <ion-input type="password" [(ngModel)]="passwordTest"></ion-input>
+      <ion-input type="password" [(ngModel)]="passwordTest" name="passwordTest"></ion-input>
     </ion-item>
-    <ion-button color="secondary" (click)="validar()">
+    <label *ngIf="errorPasswordTest" class="error">{{ errorPasswordTest }}</label>
+
+    <!-- Botón de registro -->
+    <ion-button color="secondary" expand="block" (click)="validar()">
       Registrarse
     </ion-button>
   </div>
