@@ -39,7 +39,6 @@ export class UserService {
 
   async login(usuario: Usuario) {
     const usuarioLogeado = {
-      id: usuario.id,
       nombre: usuario.nombre,
       email: usuario.email,
       descripcion: usuario.descripcion,

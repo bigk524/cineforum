@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { AlertController, Platform } from '@ionic/angular';
-import { BehaviorSubject, from, Observable } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, from, Observable } from 'rxjs';
 import { Usuario } from './usuario';
 
 @Injectable({
@@ -215,7 +215,6 @@ export class DbService {
       if (res.rows.length > 0) {
         for (var i = 0; i < res.rows.lengths; i++) {
           items.push({
-            id: res.rows.item(i).id,
             nombre: res.rows.item(i).nombre,
             email: res.rows.item(i).email,
             clave: res.rows.item(i).clave,
@@ -243,7 +242,6 @@ export class DbService {
       const res = await this.database.executeSql(query, [nombre, clave]);
       if (res.rows.length > 0) {
         const usuarioEncontrado: Usuario = {
-            id: res.rows.item(0).id,
             nombre: res.rows.item(0).nombre,
             email: res.rows.item(0).email,
             clave: res.rows.item(0).clave,
@@ -269,7 +267,7 @@ export class DbService {
     const query = 
       `SELECT COUNT(*) AS count 
        FROM usuario 
-       WHERE correo = ?;
+       WHERE email = ?;
     `;
 
     return from(this.database.executeSql(query, [correo])
@@ -294,8 +292,8 @@ export class DbService {
         return result.rows.item(0).count > 0;
       })
       .catch(e => {
-        this.presentAlert('Error validando correo', JSON.stringify(e))
-        throw new Error('Error al validar el correo')
+        this.presentAlert('Error validando nombre', JSON.stringify(e))
+        throw new Error('Error al validar el nombre')
       }))
   }
 
@@ -313,17 +311,23 @@ export class DbService {
 
   async registarUsuario(usuario: Usuario): Promise<any> {
     try { 
+      const emailExiste = await firstValueFrom(await this.existeEmail(usuario.email));
+      const nombreExiste = await firstValueFrom(await this.existeNombre(usuario.nombre));
       var errores = { emailDuplicado: false, nombreDuplicado: false };
-      if (await this.existeEmail(usuario.email)) {
+
+      console.log('Email existe: ', emailExiste)
+      console.log('Nombre existe: ', nombreExiste)
+
+      if (emailExiste) {
         errores.emailDuplicado = true;
       }
 
-      if (await this.existeNombre(usuario.nombre)) {
+      if (nombreExiste) {
         errores.nombreDuplicado = true;
       }
 
       if (errores.emailDuplicado || errores.nombreDuplicado) {
-        return errores;
+        throw errores;
       }
 
       const insert = `

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
+import { ApiRestService } from 'src/app/services/api-rest.service';
 
 @Component({
   selector: 'app-oppenheimer',
@@ -36,18 +37,32 @@ export class OppenheimerPage implements OnInit {
       reactions: '0',
     }
   ];
+
+  sitios: any;
   constructor(
      private alertController: AlertController,
         private toastController: ToastController,
         private router: Router,
-        private activatedRoute: ActivatedRoute
+        private activatedRoute: ActivatedRoute,
+        private apiRest: ApiRestService
       ) { 
         this.activatedRoute.queryParams.subscribe(params => {
           if (this.router.getCurrentNavigation()?.extras.state) {
             this.user = this.router.getCurrentNavigation()?.extras?.state?.['user'];
           }
-        })
-      }
+        });
+        // Move API call here and add error handling
+        this.apiRest.obtenerSitios("872585").subscribe({
+          next: (data) => {
+            this.sitios = data;
+            console.log('Sitios data:', JSON.stringify(this.sitios));
+          },
+          error: (error) => {
+            console.error('API Error:', error);
+            this.presentAlert('Error', 'No se pudieron obtener los sitios.');
+          }
+        });
+      } 
 
       async presentAlert(header: string, message: string) {
         const alert = await this.alertController.create({
