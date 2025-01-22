@@ -11,7 +11,6 @@
     </ion-title>
   </ion-toolbar>
 </ion-header>
-
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
@@ -19,11 +18,16 @@
     </ion-toolbar>
   </ion-header>
   <div class="lista-de-usuarios">
-    <p>Lista de usuarios</p>
+    <p class="titulo">Lista de usuarios</p>
     <ion-list>
       <ion-item *ngFor="let user of users">
-        <ion-label>{{user.name}}</ion-label>
-        <ion-button color="danger" (click)="deleteUser(user.id)">Bannear usuario</ion-button>
+        <ion-label>{{ user.name }}</ion-label>
+        <ion-button
+          color="danger"
+          (click)="banUser(user.id, user.name)"
+        >
+          Bannear usuario
+        </ion-button>
       </ion-item>
     </ion-list>
   </div>

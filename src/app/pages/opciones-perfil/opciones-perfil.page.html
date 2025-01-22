@@ -12,7 +12,6 @@
   </ion-toolbar>
 </ion-header>
 
-
 <ion-content [fullscreen]="true">
   <div class="opciones-perfil">
     <h2 class="titulo">Customizar Perfil</h2>
@@ -33,5 +32,15 @@
         </ion-button>
       </ion-item>
     </ion-list>
+
+    <!-- Mostrar la foto tomada -->
+    <div *ngIf="imagenPerfil">
+      <h3>Vista Previa de la Foto</h3>
+      <img [src]="imagenPerfil" alt="Foto del perfil" style="max-width: 100%; border-radius: 8px;"/>
+      <ion-button expand="block" color="primary" (click)="guardarFotoEnBaseDeDatos(imagenPerfil)">
+        Guardar Foto
+      </ion-button>
+    </div>
   </div>
 </ion-content>
+

@@ -14,16 +14,20 @@
 
 <ion-content [fullscreen]="true">
   <div class="profile-container">
+    <!-- Avatar y foto de perfil -->
     <ion-avatar class="profile-picture">
       <img [src]="imagenPerfil ? imagenPerfil : 'assets/lego3.jpg'" alt="Profile Picture">
     </ion-avatar>
 
+    <!-- Nombre de usuario -->
     <h2 class="username">Pepe Torres</h2>
 
+    <!-- Biografía -->
     <div class="bio-section">
       <p>Soy Pepe, un fanático de las películas.</p>
     </div>
 
+    <!-- Lista de posts -->
     <ion-list class="posts-list">
       <ion-list-header>
         <h3>Posts</h3>
@@ -36,6 +40,7 @@
       </ion-item>
     </ion-list>
 
+    <!-- Botón para ver posts baneados -->
     <ion-button expand="block" color="warning" class="banned-posts-btn" [routerDirection]="'root'" [routerLink]="['/posts-baneados']">
       Ver posts baneados
       <ion-icon name="warning" slot="end"></ion-icon>
