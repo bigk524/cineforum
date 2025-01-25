@@ -39,11 +39,11 @@ export class UserService {
 
   async login(usuario: Usuario) {
     const usuarioLogeado = {
+      id: usuario.id,
       nombre: usuario.nombre,
       email: usuario.email,
       descripcion: usuario.descripcion,
       foto: usuario.foto,
-      banneado: usuario.banneado,
       rol: usuario.rol,
       // no sería mejor sacar la contraseña del modelo?
       clave: '***' // no vamos a guardar la contraseña en native storage
@@ -51,6 +51,8 @@ export class UserService {
     await this.nativeStorage.setItem('usuario', usuarioLogeado);
     this.loggedUserSubject.next(usuarioLogeado)
   }
+  
 
   
+
 }

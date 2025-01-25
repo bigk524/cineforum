@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
-import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
+import { firstValueFrom, Subscription } from 'rxjs';
+import { DbService } from 'src/app/services/db.service';
+import { Usuario } from 'src/app/services/usuario';
 
 @Component({
   selector: 'app-admin-panel',
@@ -8,58 +10,18 @@ import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
   styleUrls: ['./admin-panel.page.scss'],
   standalone: false,
 })
-export class AdminPanelPage implements OnInit {
-  users = [
-    {
-      name: 'Matias Ramirez',
-      id: '1',
-    },
-    {
-      name: 'Pepe Torres',
-      id: '2',
-    },
-    {
-      name: 'Juan Perez',
-      id: '3',
-    },
-    {
-      name: 'Ana Lopez',
-      id: '4',
-    },
-  ];
+export class AdminPanelPage implements OnInit, OnDestroy {
+  users: Usuario[] = [];
+  private subscription!: Subscription;
 
-  private dbInstance: SQLiteObject | undefined;
+  constructor(
+    private alertController: AlertController,
+    private toastController: ToastController,
+    private dbService: DbService
+  ) {}
 
-  constructor(private alertController: AlertController, private toastController: ToastController, private sqlite: SQLite) {
-    this.initializeDatabase();
-  }
 
-  async initializeDatabase() {
-    try {
-      const db = await this.sqlite.create({
-        name: 'cineforum.db',
-        location: 'default',
-      });
-      this.dbInstance = db;
-      if (this.dbInstance) {
-        await this.dbInstance.executeSql(
-        `CREATE TABLE IF NOT EXISTS banneo (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          id_usuario INTEGER,
-          fecha DATE,
-          razon TEXT,
-          FOREIGN KEY (id_usuario) REFERENCES usuario (id)
-        );`,
-        );
-      }
-      ;
-      console.log('Tabla banneo creada o ya existe');
-    } catch (error) {
-      console.error('Error inicializando la base de datos:', error);
-    }
-  }
-
-  async banUser(id: string, name: string) {
+  async banUser(id: number) {
     const alert = await this.alertController.create({
       header: 'Bannear Usuario',
       inputs: [
@@ -67,10 +29,6 @@ export class AdminPanelPage implements OnInit {
           name: 'razon',
           type: 'text',
           placeholder: 'Razón del baneo',
-        },
-        {
-          name: 'fecha',
-          type: 'date',
         },
       ],
       buttons: [
@@ -82,8 +40,7 @@ export class AdminPanelPage implements OnInit {
           text: 'Banear',
           handler: async (data) => {
             if (data.razon && data.fecha) {
-              await this.registerBan(id, data.fecha, data.razon);
-              this.deleteUser(id);
+              await this.dbService.bannearUsuario(id, data.razon)
               this.showToast(`Usuario ${name} ha sido baneado correctamente.`);
               console.log(`Usuario ${name} baneado.`);
             } else {
@@ -97,24 +54,12 @@ export class AdminPanelPage implements OnInit {
     await alert.present();
   }
 
-  async registerBan(id: string, fecha: string, razon: string) {
-    try {
-      if (this.dbInstance) {
-        await this.dbInstance.executeSql(
-          'INSERT INTO banneo (id_usuario, fecha, razon) VALUES (?, ?, ?)',
-          [id, fecha, razon]
-        );
-      } else {
-        console.error('Database instance is not initialized.');
-      }
-      console.log('Baneo registrado en la base de datos.');
-    } catch (error) {
-      console.error('Error al registrar el baneo:', error);
-    }
+  async estaBanneado(id: number): Promise<boolean> {
+    return await firstValueFrom(this.dbService.usuarioEstaBanneado(id));
   }
 
-  deleteUser(id: string) {
-    this.users = this.users.filter((user) => user.id !== id);
+  trackByFn(_index: number, user: Usuario): number {
+    return user.id;
   }
 
   async showToast(message: string) {
@@ -127,5 +72,22 @@ export class AdminPanelPage implements OnInit {
     await toast.present();
   }
 
-  ngOnInit() {}
+  ngOnInit() { 
+    this.subscription = this.dbService.fetchUsuario().subscribe({
+      next: (data) => {
+        this.users = [...data]; // Create new array reference
+        console.log('Users loaded:', this.users);
+      },
+      error: (error) => console.error('Error loading users:', error)
+    });
+    
+    // Initial load
+    this.dbService.buscarUsuarios();
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscription)  {
+      this.subscription.unsubscribe();
+    }
+  }
 }

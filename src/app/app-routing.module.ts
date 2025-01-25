@@ -79,6 +79,10 @@ const routes: Routes = [
     path: '**',
     loadChildren: () => import('./pages/notfound/notfound.module').then( m => m.NotfoundPageModule)
   },
+  {
+    path: 'pelicula',
+    loadChildren: () => import('./pages/pelicula/pelicula.module').then( m => m.PeliculaPageModule)
+  },
 
   
  

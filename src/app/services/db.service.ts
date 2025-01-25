@@ -4,6 +4,7 @@ import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { AlertController, Platform } from '@ionic/angular';
 import { BehaviorSubject, firstValueFrom, from, Observable } from 'rxjs';
 import { Usuario } from './usuario';
+import { Pelicula } from './pelicula';
 
 @Injectable({
   providedIn: 'root'
@@ -11,28 +12,27 @@ import { Usuario } from './usuario';
 export class DbService {
   public database!: SQLiteObject;
 
-  tablaRoles = 
+  tablaRoles =
     `CREATE TABLE IF NOT EXISTS roles (
       id    INTEGER PRIMARY KEY AUTOINCREMENT,
       nombre VARCHAR(10) NOT NULL
     );
   `;
 
-  tablaUsuario = 
+  tablaUsuario =
     `CREATE TABLE IF NOT EXISTS usuario (
       id        INTEGER PRIMARY KEY AUTOINCREMENT,
       nombre    VARCHAR(20) NOT NULL,
       email     VARCHAR(50) NOT NULL,
       clave     VARCHAR(16) NOT NULL,
       descripcion TEXT,
-      banneado  BOOLEAN,
       rol       VARCHAR(10),
       foto      BLOB,
       foreign key (rol) references roles (id)
     );
   `;
 
-  tablaPeliculas = 
+  tablaPeliculas =
     `CREATE TABLE IF NOT EXISTS peliculas (
       id          INTEGER PRIMARY KEY AUTOINCREMENT,
       titulo      VARCHAR(50) NOT NULL,
@@ -47,7 +47,7 @@ export class DbService {
     );
   `;
 
-  tablaComentariosPeliculas = 
+  tablaComentariosPeliculas =
     `CREATE TABLE IF NOT EXISTS comentarios_peliculas (
       id          INTEGER PRIMARY KEY AUTOINCREMENT,
       id_pelicula INTEGER,
@@ -59,7 +59,7 @@ export class DbService {
     );
   `;
 
-  tablaTendencias = 
+  tablaTendencias =
     `CREATE TABLE IF NOT EXISTS tendencias (
       id          INTEGER PRIMARY KEY AUTOINCREMENT,
       id_pelicula INTEGER,
@@ -68,7 +68,7 @@ export class DbService {
     );
   `;
 
-  tablaBanneo = 
+  tablaBanneo =
     `CREATE TABLE IF NOT EXISTS banneo (
       id          INTEGER PRIMARY KEY AUTOINCREMENT,
       id_usuario  INTEGER,
@@ -83,13 +83,13 @@ export class DbService {
   `;
 
   registroUsuario = `
-    INSERT OR IGNORE INTO usuario (nombre, email, clave, descripcion, banneado, rol) VALUES 
-    ('admin', 'admin@cineforum.cl', 'admin', 'Administrador del sistema', 0, 1),
-    ('pepe_torres', 'p.torres@email.com', '123456', 'Usuario registrado', 0, 2),
-    ('juan_perez', 'j.perez@email.com', '123456', 'Usuario registrado', 0, 2),
-    ('maria_gonzalez', 'm.gonzales@email.com', '123456', 'Usuario registrado', 0, 2),
-    ('matias_ramirez', 'm.ramirez@email.com', '123456', 'Usuario registrado', 0, 2),
-    ('jaime_rodriguez', 'j.rodriguez@email.com', '123456', 'Usuario registrado', 0, 2);
+    INSERT OR IGNORE INTO usuario (nombre, email, clave, descripcion, rol) VALUES 
+    ('admin', 'admin@cineforum.cl', 'admin', 'Administrador del sistema', 1),
+    ('pepe_torres', 'p.torres@email.com', '123456', 'Usuario registrado', 2),
+    ('juan_perez', 'j.perez@email.com', '123456', 'Usuario registrado', 2),
+    ('maria_gonzalez', 'm.gonzales@email.com', '123456', 'Usuario registrado', 2),
+    ('matias_ramirez', 'm.ramirez@email.com', '123456', 'Usuario registrado', 2),
+    ('jaime_rodriguez', 'j.rodriguez@email.com', '123456', 'Usuario registrado', 2);
   `;
 
   registroPeliculas = `
@@ -140,26 +140,21 @@ export class DbService {
 
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  private listaUsuarios = new BehaviorSubject([]);
-
   constructor(
     private sqlite: SQLite,
     private platform: Platform,
     private router: Router,
     private alertController: AlertController
-  ) { 
+  ) {
     this.creadDB();
   }
 
-  fetchUsuario(): Observable<Usuario[]> {
-    return this.listaUsuarios.asObservable();
-  }
 
   dbStatus() {
     return this.isDBReady.asObservable();
   }
 
-  async presentAlert(header: string, message: string) { 
+  async presentAlert(header: string, message: string) {
     const alert = await this.alertController.create({
       header,
       message,
@@ -209,26 +204,37 @@ export class DbService {
     this.isDBReady.next(true);
   }
 
+  private listaUsuarios = new BehaviorSubject<Usuario[]>([]);
+
+  fetchUsuario() {
+    return this.listaUsuarios.asObservable();
+  }
+
+
   async buscarUsuarios() {
-    await this.database.executeSql('SELECT * FROM usuario', []).then(res => {
-      let items: Usuario[] = [];
+    try {
+      const res = await this.database.executeSql('SELECT * FROM usuario', []);
+      const items: Usuario[] = [];
+
       if (res.rows.length > 0) {
-        for (var i = 0; i < res.rows.lengths; i++) {
+        for (let i = 0; i < res.rows.length; i++) {
           items.push({
+            id: res.rows.item(i).id,
             nombre: res.rows.item(i).nombre,
             email: res.rows.item(i).email,
             clave: res.rows.item(i).clave,
-            descripcion: res.rows(i).descripcion,
-            banneado: res.rows.item(i).banneado,
+            descripcion: res.rows.item(i).descripcion,
             rol: res.rows.item(i).rol,
             foto: res.rows.item(i).foto
-          })
+          });
         }
       }
-      this.listaUsuarios.next(items as any);
-    }).catch(e => {
+
+      this.listaUsuarios.next([...items]);
+    } catch (e) {
+      console.error('Error in buscarUsuarios:', e);
       this.presentAlert('Error buscarUsuarios', JSON.stringify(e));
-    })
+    }
   }
 
   async buscarUsuario(nombre: string, clave: string): Promise<Usuario | null> {
@@ -238,17 +244,17 @@ export class DbService {
       WHERE nombre = ? AND clave = ?;
     `;
     try {
-      console.log ('Ejecutando query', query, 'with parameters', [nombre, clave]);
+      console.log('Ejecutando query', query, 'with parameters', [nombre, clave]);
       const res = await this.database.executeSql(query, [nombre, clave]);
       if (res.rows.length > 0) {
         const usuarioEncontrado: Usuario = {
-            nombre: res.rows.item(0).nombre,
-            email: res.rows.item(0).email,
-            clave: res.rows.item(0).clave,
-            descripcion: res.rows.item(0).descripcion,
-            banneado: res.rows.item(0).banneado,
-            rol: res.rows.item(0).rol,
-            foto: res.rows.item(0).foto
+          id: res.rows.item(0).id,
+          nombre: res.rows.item(0).nombre,
+          email: res.rows.item(0).email,
+          clave: res.rows.item(0).clave,
+          descripcion: res.rows.item(0).descripcion,
+          rol: res.rows.item(0).rol,
+          foto: res.rows.item(0).foto
         };
         console.log('Usuario encontrado: ', usuarioEncontrado);
         return usuarioEncontrado;
@@ -264,7 +270,7 @@ export class DbService {
   }
 
   existeEmail(correo: string): Observable<boolean> {
-    const query = 
+    const query =
       `SELECT COUNT(*) AS count 
        FROM usuario 
        WHERE email = ?;
@@ -281,7 +287,7 @@ export class DbService {
   }
 
   existeNombre(nombre: string): Observable<boolean> {
-    const query = 
+    const query =
       `SELECT COUNT(*) AS count 
        FROM usuario 
        WHERE nombre = ?;
@@ -300,17 +306,17 @@ export class DbService {
   async cambiarClave(id: number, claveNueva: string): Promise<void> {
     try {
       await this.database.executeSql(
-       `UPDATE usuario 
+        `UPDATE usuario 
         SET clave = ? 
         WHERE id = ?;
         `, [claveNueva, id]);
     } catch (e) {
       console.error('Error al cambia la clave: ', JSON.stringify(e))
     }
-  } 
+  }
 
   async registarUsuario(usuario: Usuario): Promise<any> {
-    try { 
+    try {
       const emailExiste = await firstValueFrom(await this.existeEmail(usuario.email));
       const nombreExiste = await firstValueFrom(await this.existeNombre(usuario.nombre));
       var errores = { emailDuplicado: false, nombreDuplicado: false };
@@ -330,9 +336,9 @@ export class DbService {
         throw errores;
       }
 
-      const insert = `
-        INSERT INTO usuario (nombre, email, clave, descripcion, banneado, rol)
-        VALUES (?, ?, ?, ?, ?, ?);
+      const insert =
+        `INSERT INTO usuario (nombre, email, clave, descripcion, rol)
+       VALUES (?, ?, ?, ?, ?);
       `;
 
       await this.database.executeSql(insert, [
@@ -340,7 +346,6 @@ export class DbService {
         usuario.email,
         usuario.clave,
         usuario.descripcion,
-        0,
         2
       ]);
 
@@ -350,6 +355,78 @@ export class DbService {
       return Promise.resolve();
     } catch (e) {
       return Promise.reject(e);
+    }
+  }
+
+  async bannearUsuario(id: number, razon: string) {
+    const hoy = new Date();
+    const query =
+      `INSERT INTO banneo (id_usuario, fecha, razon)
+       VALUES (?, ?, ?);`
+    try {
+      this.database.executeSql(query, [id, hoy.toISOString(), razon]);
+    } catch (e) {
+      console.error('Database error: ', JSON.stringify(e));
+      this.presentAlert('Error al acceder a la base de datos', JSON.stringify(e));
+      throw new Error('Error al acceder a la base de datos');
+    }
+  }
+
+  usuarioEstaBanneado(id: number): Observable<boolean> {
+    const query =
+      `SELECT COUNT(*) AS count 
+       FROM banneo
+       WHERE id_usuario = ?;
+      `;
+
+    return from(this.database.executeSql(query, [id])
+      .then(res => {
+        return res.rows.items(0).count > 0;
+      })
+      .catch(e => {
+        this.presentAlert('Error buscando banneo', JSON.stringify(e));
+        throw new Error('Error buscando banneo');
+      }));
+  }
+
+  // Peliculas:
+
+  movieCache: Pelicula[] = [];
+  private moviesSubject = new BehaviorSubject<Pelicula[]>([]);
+  private moviesHasLoadaded = false;
+
+  getMovies(): Observable<Pelicula[]> {
+    if (!this.moviesHasLoadaded) {
+      this.loadMoviesFromDb();
+      this.moviesHasLoadaded = true;
+    }
+    return this.moviesSubject.asObservable();
+  }
+
+  private async loadMoviesFromDb() {
+    try {
+      const result = await this.database.executeSql("SELECT * FROM peliculas;", []);
+      this.movieCache = [];
+
+      for (let i = 0; i < result.rows.length; i++) {
+        this.movieCache.push({
+          id: result.rows.item(i).id,
+          titulo: result.rows.item(i).titulo,
+          genero: result.rows.item(i).genero,
+          duracion: result.rows.item(i).duracion,
+          clasificacion: result.rows.item(i).clasificacion,
+          sinopsis: result.rows.item(i).sinopsis,
+          director: result.rows.item(i).director,
+          rating: result.rows.item(i).rating,
+          estreno: result.rows.item(i).estreno,
+          portada: result.rows.item(i).portada || 'assets/rollo.jpg'
+        });
+      }
+
+      this.moviesSubject.next([...this.movieCache]);
+    } catch (e) {
+      console.error('DB Error loading movies from DB', JSON.stringify(e));
+      this.presentAlert('Error cargando peliculas', JSON.stringify(e));
     }
   }
 }

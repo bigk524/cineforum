@@ -17,26 +17,29 @@
   <div class="banner">
     <h1 class="subtitulo">Bienvenido a CineForum</h1>
     <p class="comparte"><em>Comparte y descubre opiniones sobre tus películas favoritas.</em></p>
-    <ion-searchbar placeholder="Buscar peliculas en el foro"></ion-searchbar>
-    <ion-button color="secondary" [routerLink]="['/admin-panel']" *ngIf="user == 'admin'">
+    <ion-searchbar [(ngModel)]="searchTerm"
+      placeholder="Buscar peliculas en el foro">
+    </ion-searchbar>
+    <ion-button color="secondary" [routerLink]="['/admin-panel']" *ngIf="role == 'admin'">
       Administrar
     </ion-button>
-    <ion-button color="secondary" [routerLink]="['/crear-publicacion']" *ngIf="user == 'admin'">
+    <ion-button color="secondary" [routerLink]="['/crear-publicacion']" *ngIf="role == 'admin'">
       Agregar película
     </ion-button>
   </div>
- 
+
   <ion-list>
-    <ion-item *ngFor="let movie of movies">
+    <ion-item *ngFor="let pelicula of peliculas$ | async">
       <ion-thumbnail slot="start">
-        <ion-img [src]="movie.poster"></ion-img>
+        <ion-img [src]="pelicula.portada"></ion-img>
       </ion-thumbnail>
       <ion-label>
-        <h2>{{movie.title}}</h2>
-        <p>{{movie.description}}</p>
+        <h2>{{pelicula.titulo}}</h2>
+        <p>{{pelicula.sinopsis}}</p>
       </ion-label>
-      <ion-button color="secondary" (click)="routeToMovie(movie.route)">leer mas</ion-button>
+      <ion-button color="secondary" [routerLink]="['/pelicula', pelicula.id]">
+        leer más
+      </ion-button>
     </ion-item>
-
   </ion-list>
 </ion-content>
