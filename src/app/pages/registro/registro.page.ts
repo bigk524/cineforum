@@ -79,11 +79,11 @@ export class RegistroPage implements OnInit {
 
     // Crear objeto usuario y registrar
     const usuario: Usuario = {
+      id: -1, // oops!
       nombre: this.name,
       email: this.correo,
       clave: this.password,
       descripcion: '',
-      banneado: false,
       rol: 2,
       foto: null
     };

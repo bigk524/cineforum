@@ -1,6 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MenuController } from '@ionic/angular';
+import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
+import { AlertController, MenuController } from '@ionic/angular';
+import { UserService } from '../services/user.service';
+import { DbService } from '../services/db.service';
+import { Pelicula } from '../services/pelicula';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -8,65 +13,22 @@ import { MenuController } from '@ionic/angular';
   styleUrls: ['home.page.scss'],
   standalone: false,
 })
-export class HomePage {
-  user: string = '';
-  movies = [
-    {
-      title: "Oppenheimer",
-      description: "La historia de J. Robert Oppenheimer, el científico",
-      poster: "/assets/images.jpg",
-      route: "/oppenheimer"
-    },
-    {
-      title: "Spider-Man: Across the Spider-Verse",
-      description: " Miles Morales se catapulta a través del multiverso y se encuentra con la Sociedad Araña",
-      poster: "/assets/Across-the-Spider-Verse-2023.jpg",
-      route: "/spider-man"
-    },
-    {
-      title: "Barbie",
-      description: "La película de Barbie",
-      poster: "/assets/maxresdefault.jpg",
-      route: "/barbie"
-    },
-    {
-      title: 'Blade Runner 2049',
-      description: 'La secuela de Blade Runner de 1982',
-      poster: '/assets/bladerunner.jpg',
-      route: '/blanerunner',
-    },
-    {
-      title: 'Deadpool 3',
-      description: 'La tercera entrega de Deadpool',
-      poster: '/assets/deadpool.jpg',
-    },
-    {
-      title: 'Profesión Peligro',
-      description: 'Ryan Gosling y Harrison Ford en una película de acción',
-      poster: '/assets/The-fall-guy.jpg',
-    },
-    {
-      title: 'Ready Player One',
-      description: 'Una película de ciencia ficción de Steven Spielberg',
-      poster: '/assets/unnamed.png',
-    },
-    {
-      title: 'The Matrix',
-      description: 'La película de los hermanos Wachowski',
-      poster: '/assets/the-matrix.jpg',
-    }
-  ]
+export class HomePage implements OnInit {
+  role: string = '';
+  searchTerm: string = '';
+  peliculas$!: Observable<Pelicula[]>;
+
   constructor(
     private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private menuCtrl: MenuController
+    private alertController: AlertController,
+    private menuCtrl: MenuController,
+    private nativeStorage: NativeStorage,
+    private dbService: DbService,
   ) {
     this.ionViewWillOpen();
-    this.activatedRoute.queryParams.subscribe(params => {
-      if (this.router.getCurrentNavigation()?.extras.state) {
-        this.user = this.router.getCurrentNavigation()?.extras?.state?.['user'];
-      }
-    })
+    this.nativeStorage.getItem('rol').then(result => {
+      this.role = result;
+    });
   }
 
   ionViewWillOpen() {
@@ -74,17 +36,33 @@ export class HomePage {
     this.menuCtrl.swipeGesture(true);
   }
 
-  routeToMovie(route: any) {
-    let navigationExtras = {
-      state: {
-        user: this.user
-      }
-    }
-    this.router.navigate([route], navigationExtras);
+  ngOnInit() {
+    this.peliculas$ = this.dbService.getMovies();
   }
-  
-  //definir la funcion de agregar publicaciones
-  addPost() {
-    console.log('Agregar nueva publicación');
+
+ /*
+  async searchMovies(term: string) {
+    if (!term) {
+      this.peliculas = [...this.dbService.movieCache];
+      return;
+    }
+
+    this.peliculas = this.peliculas.filter(movie => 
+      movie.titulo.toLowerCase().includes(term.toLowerCase())
+    );
+  }
+
+  trackById(_index: number, pelicula: Pelicula): number {
+    return pelicula.id;
+  }
+*/
+  async presentAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+
+    await alert.present();
   }
 }
