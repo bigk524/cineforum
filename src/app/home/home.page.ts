@@ -51,10 +51,12 @@ export class HomePage implements OnInit {
     }
   }
 
-  /*
+  
   async searchMovies(term: string) {
     if (!term) {
-      this.peliculas = this.peliculas;
+      this.dbService.fetchPeliculas().subscribe(result => {
+        this.peliculas = result;
+      });
       return;
     }
 
@@ -68,7 +70,6 @@ export class HomePage implements OnInit {
     return pelicula.id;
   }
 
-  */
   async presentAlert(header: string, message: string) {
     const alert = await this.alertController.create({
       header,

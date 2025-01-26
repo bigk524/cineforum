@@ -5,6 +5,7 @@ import { DbService } from 'src/app/services/db.service';
 import { Pelicula } from 'src/app/services/pelicula';
 import { Comment } from 'src/app/services/comment';
 import { Share } from '@capacitor/share';
+import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 
 @Component({
   selector: 'app-pelicula',
@@ -21,20 +22,26 @@ export class PeliculaPage implements OnInit {
   stars: number[] = [1, 2, 3, 4, 5];
   ratings: number[] = [];
   averageRating: number = 0;
+  currentUserId: number = 0;
 
   constructor(
     private route: ActivatedRoute,
     private dbService: DbService,
     private alertController: AlertController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private nativeStorage: NativeStorage
   ) { }
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
+    this.nativeStorage.getItem('usuario').then(result => {
+      this.currentUserId = result.id;
+    });
     if (id) {
       try {
         this.pelicula = await this.dbService.getPeliculaById(Number(id));
         this.comments = await this.dbService.getComentariosPelicula(Number(id));
+        if (this.userRating) await this.dbService.getUserRating(Number(id), this.currentUserId);
       } catch (error) {
         console.error('Error loading movie:', error);
         this.presentAlert('Error', 'No se pudo cargar la película');
@@ -86,27 +93,61 @@ export class PeliculaPage implements OnInit {
   }
 
   validateComment() {
-    if (!this.newComment.trim()) {
-      this.errorMessage = 'El comentario no puede estar vacío.';
+    if (!this.newComment?.trim()) {
+      this.errorMessage = 'El comentario no puede estar vacío';
     } else if (this.newComment.length < 5) {
-      this.errorMessage = 'El comentario debe tener al menos 5 caracteres.';
+      this.errorMessage = 'El comentario debe tener al menos 5 caracteres';
+    } else if (this.newComment.length > 500) {
+      this.errorMessage = 'El comentario no puede exceder los 500 caracteres';
     } else {
       this.errorMessage = '';
     }
   }
 
-  sendComment() {
+  async sendComment() {
     this.validateComment();
     if (this.errorMessage) return;
-
-    console.log('Comentario enviado:', this.newComment);
-    this.newComment = '';
+  
+    if (!this.currentUserId || !this.pelicula) {
+      this.presentAlert('Error', 'Debes iniciar sesión para comentar');
+      return;
+    }
+  
+    try {
+      await this.dbService.addComentario(
+        this.pelicula.id,
+        this.currentUserId,
+        this.newComment
+      );
+      
+      // Refresh comments
+      this.comments = await this.dbService.getComentariosPelicula(this.pelicula.id);
+      
+      // Clear input
+      this.newComment = '';
+      this.presentToast('Comentario publicado');
+    } catch (error) {
+      console.error('Error posting comment:', error);
+      this.presentAlert('Error', 'No se pudo publicar el comentario');
+    }
   }
 
-  rateMovie(rating: number) {
-    this.userRating = rating;
-    this.ratings.push(rating);
-    this.calculateAverageRating();
+  async rateMovie(rating: number) {
+    if (!this.currentUserId || !this.pelicula) {
+      this.presentAlert('Error', 'Debes iniciar sesión para calificar');
+      return;
+    }
+
+    try {
+      await this.dbService.setUserRating(this.pelicula.id, this.currentUserId, rating);
+      this.userRating = rating;
+      // Refresh movie data to get updated rating
+      this.pelicula = await this.dbService.getPeliculaById(this.pelicula.id);
+      this.presentToast('Calificación guardada');
+    } catch (error) {
+      console.error('Error rating movie:', error);
+      this.presentAlert('Error', 'No se pudo guardar la calificación');
+    }
   }
 
   calculateAverageRating() {
