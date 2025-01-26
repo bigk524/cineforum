@@ -20,10 +20,10 @@
   <div class="lista-de-usuarios">
     <p class="titulo">Lista de usuarios</p>
     <ion-list>
-      <ion-item *ngFor="let user of users">
-        <ion-label>{{ user.nombre }}</ion-label>
+      <ion-item *ngFor="let user of users" [class.banned-user]="isUserBanned(user.id)">
+        <ion-label [class.banne-user]="isUserBanned(user.id)">{{ user.nombre }}</ion-label>
         <ion-button
-          *ngIf="!(estaBanneado(user.id) | async)&&user.id != 1"
+          *ngIf="!(user.id == 1 || isUserBanned(user.id))"
           color="danger"
           (click)="banUser(user.id)">
           Bannear usuario

@@ -39,12 +39,13 @@ export class AdminPanelPage implements OnInit, OnDestroy {
         {
           text: 'Banear',
           handler: async (data) => {
-            if (data.razon && data.fecha) {
-              await this.dbService.bannearUsuario(id, data.razon)
-              this.showToast(`Usuario ${name} ha sido baneado correctamente.`);
-              console.log(`Usuario ${name} baneado.`);
+            if (data.razon) {
+              await this.dbService.bannearUsuario(id, data.razon);
+              await this.dbService.loadBannedUsers() // Recargar usuarios banneados
+              this.showToast(`Usuario ha sido baneado correctamente.`);
+              console.log(`Usuario ID: ${id} baneado.`);
             } else {
-              console.error('Razón y fecha son requeridas.');
+              console.error('La razón de banneo es requerida.');
             }
           },
         },
@@ -52,10 +53,6 @@ export class AdminPanelPage implements OnInit, OnDestroy {
     });
 
     await alert.present();
-  }
-
-  async estaBanneado(id: number): Promise<boolean> {
-    return await firstValueFrom(this.dbService.usuarioEstaBanneado(id));
   }
 
   trackByFn(_index: number, user: Usuario): number {
@@ -73,19 +70,30 @@ export class AdminPanelPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() { 
-    this.subscription = this.dbService.fetchUsuario().subscribe({
-      next: (data) => {
-        this.users = data;
-        console.log('Users loaded:', this.users);
-      },
-      error: (error) => console.error('Error loading users:', error)
+    this.dbService.loadBannedUsers().then(() => {
+      this.subscription = this.dbService.fetchUsuario().subscribe({
+        next: (data) => {
+          this.users = data;
+          console.log('Users loaded:', this.users);
+        },
+        error: (error) => console.error('Error loading users:', error)
+      });
     });
-    
   }
 
   ngOnDestroy(): void {
-    if (this.subscription)  {
-      this.subscription.unsubscribe();
-    }
+    this.dbService.loadBannedUsers().then(() => {
+      this.subscription = this.dbService.fetchUsuario().subscribe({
+         next: (data) => {
+          this.users = data;
+          console.log('Users loaded', JSON.stringify(this.users));
+         },
+         error: (error) => console.error('Error loading users', JSON.stringify(error))
+      });
+    });
+  }
+
+  isUserBanned(userId: number): boolean {
+    return this.dbService.isUserBanned(userId);
   }
 }
