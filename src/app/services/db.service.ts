@@ -79,63 +79,63 @@ export class DbService {
   `;
 
   registroRoles = `
-    INSERT OR IGNORE INTO roles (nombre) VALUES ('admin'), ('usuario');
+    INSERT OR IGNORE INTO roles (id, nombre) VALUES (1, 'admin'), (2, 'usuario');
   `;
 
   registroUsuario = `
-    INSERT OR IGNORE INTO usuario (nombre, email, clave, descripcion, rol) VALUES 
-    ('admin', 'admin@cineforum.cl', 'admin', 'Administrador del sistema', 1),
-    ('pepe_torres', 'p.torres@email.com', '123456', 'Usuario registrado', 2),
-    ('juan_perez', 'j.perez@email.com', '123456', 'Usuario registrado', 2),
-    ('maria_gonzalez', 'm.gonzales@email.com', '123456', 'Usuario registrado', 2),
-    ('matias_ramirez', 'm.ramirez@email.com', '123456', 'Usuario registrado', 2),
-    ('jaime_rodriguez', 'j.rodriguez@email.com', '123456', 'Usuario registrado', 2);
+    INSERT OR IGNORE INTO usuario (id, nombre, email, clave, descripcion, rol) VALUES 
+    (1, 'admin', 'admin@cineforum.cl', 'admin', 'Administrador del sistema', 1),
+    (2, 'pepe_torres', 'p.torres@email.com', '123456', 'Usuario registrado', 2),
+    (3, 'juan_perez', 'j.perez@email.com', '123456', 'Usuario registrado', 2),
+    (4, 'maria_gonzalez', 'm.gonzales@email.com', '123456', 'Usuario registrado', 2),
+    (5, 'matias_ramirez', 'm.ramirez@email.com', '123456', 'Usuario registrado', 2),
+    (6, 'jaime_rodriguez', 'j.rodriguez@email.com', '123456', 'Usuario registrado', 2);
   `;
 
   registroPeliculas = `
     INSERT OR IGNORE INTO peliculas 
-    (titulo, genero, duracion, clasificacion, sinopsis, director, rating, estreno) VALUES
-    ('El Padrino', 'Drama', 175, '18+', 'La historia de la familia Corleone', 'Francis Ford Coppola', 9.2, '1972-03-24'),
-    ('El Padrino II', 'Drama', 202, '18+', 'La historia de la familia Corleone', 'Francis Ford Coppola', 9.0, '1974-12-20'),
-    ('Volver al Futuro', 'Ciencia Ficción', 116, '7+', 'Un joven viaja al pasado en un auto', 'Robert Zemeckis', 8.5, '1985-07-03'),
-    ('Titanic', 'Drama', 195, '12+', 'Un barco se hunde en el Atlántico', 'James Cameron', 7.8, '1998-01-23'),
-    ('El Señor de los Anillos: La Comunidad del Anillo', 'Fantasía', 178, '12+', 'Un anillo mágico debe ser destruído', 'Peter Jackson', 8.8, '2001-12-19'),
-    ('Rápido y Furioso', 'Acción', 106, '14+', 'Un policía se infiltra en carreras ilegales', 'Rob Cohen', 6.8, '2001-06-22');
+    (id, titulo, genero, duracion, clasificacion, sinopsis, director, rating, estreno) VALUES
+    (1, 'El Padrino', 'Drama', 175, '18+', 'La historia de la familia Corleone', 'Francis Ford Coppola', 9.2, '1972-03-24'),
+    (2, 'El Padrino II', 'Drama', 202, '18+', 'La historia de la familia Corleone', 'Francis Ford Coppola', 9.0, '1974-12-20'),
+    (3, 'Volver al Futuro', 'Ciencia Ficción', 116, '7+', 'Un joven viaja al pasado en un auto', 'Robert Zemeckis', 8.5, '1985-07-03'),
+    (4, 'Titanic', 'Drama', 195, '12+', 'Un barco se hunde en el Atlántico', 'James Cameron', 7.8, '1998-01-23'),
+    (5, 'El Señor de los Anillos: La Comunidad del Anillo', 'Fantasía', 178, '12+', 'Un anillo mágico debe ser destruído', 'Peter Jackson', 8.8, '2001-12-19'),
+    (6, 'Rápido y Furioso', 'Acción', 106, '14+', 'Un policía se infiltra en carreras ilegales', 'Rob Cohen', 6.8, '2001-06-22');
   `;
 
   /* TAREA: < Copiar los comentarios viejos > */
   registroComentariosPeliculas = `
     INSERT OR IGNORE INTO comentarios_peliculas 
-    (id_pelicula, id_usuario, comentario, fecha) VALUES 
-    (1, 2, 'Excelente película', '2021-06-01'),
-    (1, 3, 'Una obra maestra', '2021-06-02'),
-    (1, 4, 'Muy buena', '2021-06-03'),
-    (2, 2, 'Muy buena continuación', '2021-06-04'),
-    (2, 3, 'Excelente', '2021-06-05'),
-    (2, 4, 'Muy buena', '2021-06-06'),
-    (3, 2, 'Muy buena', '2021-06-07'),
-    (3, 3, 'Excelente', '2021-06-08'),
-    (3, 4, 'Muy buena', '2021-06-09'),
-    (4, 2, 'Excelente', '2021-06-10'),
-    (4, 4, 'Excelente', '2021-06-12'),
-    (5, 2, 'Excelente', '2021-06-13'),
-    (5, 3, 'Muy buena', '2021-06-14'),
-    (5, 4, 'Excelente', '2021-06-15');
+    (id, id_pelicula, id_usuario, comentario, fecha) VALUES 
+    (1, 1, 2, 'Excelente película', '2021-06-01'),
+    (2, 1, 3, 'Una obra maestra', '2021-06-02'),
+    (3, 1, 4, 'Muy buena', '2021-06-03'),
+    (4, 2, 2, 'Muy buena continuación', '2021-06-04'),
+    (5, 2, 3, 'Excelente', '2021-06-05'),
+    (6, 2, 4, 'Muy buena', '2021-06-06'),
+    (7, 3, 2, 'Muy buena', '2021-06-07'),
+    (8, 3, 3, 'Excelente', '2021-06-08'),
+    (9, 3, 4, 'Muy buena', '2021-06-09'),
+    (10, 4, 2, 'Excelente', '2021-06-10'),
+    (11, 4, 4, 'Excelente', '2021-06-12'),
+    (12, 5, 2, 'Excelente', '2021-06-13'),
+    (13, 5, 3, 'Muy buena', '2021-06-14'),
+    (14, 5, 4, 'Excelente', '2021-06-15');
   `;
 
   registroTendencias = `
-    INSERT OR IGNORE INTO tendencias (id_pelicula, fecha) VALUES 
-    (1, '2021-06-01'), 
-    (2, '2021-06-02'), 
-    (3, '2021-06-03'), 
-    (4, '2021-06-04'), 
-    (5, '2021-06-05');
+    INSERT OR IGNORE INTO tendencias (id, id_pelicula, fecha) VALUES 
+    (1, 1, '2021-06-01'), 
+    (2, 2, '2021-06-02'), 
+    (3, 3, '2021-06-03'), 
+    (4, 4, '2021-06-04'), 
+    (5, 5, '2021-06-05');
   `;
 
   registroBanneo = `
     INSERT OR IGNORE INTO banneo 
-    (id_usuario, fecha, razon) VALUES 
-    (5, '2021-06-01', 'Comentarios ofensivos');
+    (id, id_usuario, fecha, razon) VALUES 
+    (1, 5, '2021-06-01', 'Comentarios ofensivos');
   `;
 
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -186,7 +186,6 @@ export class DbService {
       await this.database.executeSql(this.tablaPeliculas, []);
       await this.database.executeSql(this.tablaTendencias, []);
       await this.database.executeSql(this.tablaComentariosPeliculas, []);
-      this.isDBReady.next(true);
     } catch (e) {
       this.presentAlert('Error al crear tablas', JSON.stringify(e));
       return;
@@ -198,6 +197,9 @@ export class DbService {
       await this.database.executeSql(this.registroPeliculas, []);
       await this.database.executeSql(this.registroTendencias, []);
       await this.database.executeSql(this.registroComentariosPeliculas, []);
+
+      await this.buscarPeliculas();
+      await this.buscarUsuarios();
     } catch (e) {
       this.presentAlert('Error al insertar datos en tablas', JSON.stringify(e));
     }
@@ -239,7 +241,7 @@ export class DbService {
 
   async buscarUsuario(nombre: string, clave: string): Promise<Usuario | null> {
     const query = `
-      SELECT id, nombre, email, clave, descripcion, banneado, rol, foto
+      SELECT id, nombre, email, clave, descripcion, rol, foto
       FROM usuario
       WHERE nombre = ? AND clave = ?;
     `;
@@ -391,42 +393,32 @@ export class DbService {
 
   // Peliculas:
 
-  movieCache: Pelicula[] = [];
-  private moviesSubject = new BehaviorSubject<Pelicula[]>([]);
-  private moviesHasLoadaded = false;
+  private listaPeliculas = new BehaviorSubject<Pelicula[]>([]);
 
-  getMovies(): Observable<Pelicula[]> {
-    if (!this.moviesHasLoadaded) {
-      this.loadMoviesFromDb();
-      this.moviesHasLoadaded = true;
-    }
-    return this.moviesSubject.asObservable();
+  fetchPeliculas() {
+    return this.listaPeliculas.asObservable();
   }
 
-  private async loadMoviesFromDb() {
-    try {
-      const result = await this.database.executeSql("SELECT * FROM peliculas;", []);
-      this.movieCache = [];
-
-      for (let i = 0; i < result.rows.length; i++) {
-        this.movieCache.push({
-          id: result.rows.item(i).id,
-          titulo: result.rows.item(i).titulo,
-          genero: result.rows.item(i).genero,
-          duracion: result.rows.item(i).duracion,
-          clasificacion: result.rows.item(i).clasificacion,
-          sinopsis: result.rows.item(i).sinopsis,
-          director: result.rows.item(i).director,
-          rating: result.rows.item(i).rating,
-          estreno: result.rows.item(i).estreno,
-          portada: result.rows.item(i).portada || 'assets/rollo.jpg'
-        });
+  async buscarPeliculas() {   
+    return await this.database.executeSql("SELECT * FROM peliculas;", []).then(result=> {
+      let items: Pelicula[] = [];
+      if (result.rows.length > 0) {
+        for (let i = 0; i < result.rows.length; i++) {
+          items.push({
+            id: result.rows.item(i).id,
+            titulo: result.rows.item(i).titulo,
+            genero: result.rows.item(i).genero,
+            duracion: result.rows.item(i).duracion,
+            clasificacion: result.rows.item(i).clasificacion,
+            sinopsis: result.rows.item(i).sinopsis,
+            director: result.rows.item(i).director,
+            rating: result.rows.item(i).rating,
+            estreno: result.rows.item(i).estreno,
+            portada: result.rows.item(i).portada || 'assets/rollo.jpg'
+        })
       }
-
-      this.moviesSubject.next([...this.movieCache]);
-    } catch (e) {
-      console.error('DB Error loading movies from DB', JSON.stringify(e));
-      this.presentAlert('Error cargando peliculas', JSON.stringify(e));
     }
+    this.listaPeliculas.next(items as any);
+    });
   }
 }
