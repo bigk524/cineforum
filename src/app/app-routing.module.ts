@@ -76,13 +76,14 @@ const routes: Routes = [
     loadChildren: () => import('./pages/opciones-seguridad/opciones-seguridad.module').then( m => m.OpcionesSeguridadPageModule)
   },
   {
+    path: 'pelicula/:id',
+    loadChildren: () => import('./pages/pelicula/pelicula.module').then( m => m.PeliculaPageModule)
+  },
+  {
     path: '**',
     loadChildren: () => import('./pages/notfound/notfound.module').then( m => m.NotfoundPageModule)
   },
-  {
-    path: 'pelicula',
-    loadChildren: () => import('./pages/pelicula/pelicula.module').then( m => m.PeliculaPageModule)
-  },
+  
 
   
  
