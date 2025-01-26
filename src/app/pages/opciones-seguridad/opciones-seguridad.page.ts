@@ -45,7 +45,7 @@ export class OpcionesSeguridadPage implements OnInit {
       return;
     }
 
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(this.newPassword)) {
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W])[\w\W]{8,}$/.test(this.newPassword)) {
       this.presentAlert('Error','La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un caracter especial');
       return;
     }

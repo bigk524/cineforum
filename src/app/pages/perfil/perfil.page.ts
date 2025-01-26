@@ -43,7 +43,7 @@ export class PerfilPage implements OnInit {
   }
 
   editProfile() {
-    this.router.navigate(['/opciones-perfil']);
+    this.router.navigate(['/opciones/perfil']);
   }
 
   logout() {
