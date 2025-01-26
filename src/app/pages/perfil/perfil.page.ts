@@ -38,7 +38,7 @@ export class PerfilPage implements OnInit {
 
   cargarFotoPerfil() {
     this.sqlite.create({
-      name: 'miBaseDeDatos.db',
+      name: 'cineforum.db',
       location: 'default'
     }).then((db: SQLiteObject) => {
       // Supongo que tienes un identificador de usuario guardado
