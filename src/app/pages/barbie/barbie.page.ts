@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
+import { Share } from '@capacitor/share'; 
 
 @Component({
   selector: 'app-barbie',
@@ -108,6 +109,17 @@ export class BarbiePage implements OnInit {
   calculateAverageRating() {
     const total = this.ratings.reduce((sum, rate) => sum + rate, 0);
     this.averageRating = this.ratings.length ? total / this.ratings.length : 0;
+  }
+  async shareMovie() {
+    try {
+      await Share.share({
+        title: 'Oppenheimer',
+        text: 'Te recomiendo ver barbie la pelicula y toda su info en CineForum, una película fascinante con una historia atrapante.',
+        dialogTitle: 'Compartir película'
+      });
+    } catch (error) {
+      console.error('Error al compartir:', error);
+    }
   }
 
   ngOnInit() { }
