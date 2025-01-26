@@ -5,6 +5,7 @@ import { AlertController, Platform } from '@ionic/angular';
 import { BehaviorSubject, firstValueFrom, from, Observable } from 'rxjs';
 import { Usuario } from './usuario';
 import { Pelicula } from './pelicula';
+import { Comment } from './comment';
 
 @Injectable({
   providedIn: 'root'
@@ -94,13 +95,13 @@ export class DbService {
 
   registroPeliculas = `
     INSERT OR IGNORE INTO peliculas 
-    (id, titulo, genero, duracion, clasificacion, sinopsis, director, rating, estreno) VALUES
-    (1, 'El Padrino', 'Drama', 175, '18+', 'La historia de la familia Corleone', 'Francis Ford Coppola', 9.2, '1972-03-24'),
-    (2, 'El Padrino II', 'Drama', 202, '18+', 'La historia de la familia Corleone', 'Francis Ford Coppola', 9.0, '1974-12-20'),
-    (3, 'Volver al Futuro', 'Ciencia Ficción', 116, '7+', 'Un joven viaja al pasado en un auto', 'Robert Zemeckis', 8.5, '1985-07-03'),
-    (4, 'Titanic', 'Drama', 195, '12+', 'Un barco se hunde en el Atlántico', 'James Cameron', 7.8, '1998-01-23'),
-    (5, 'El Señor de los Anillos: La Comunidad del Anillo', 'Fantasía', 178, '12+', 'Un anillo mágico debe ser destruído', 'Peter Jackson', 8.8, '2001-12-19'),
-    (6, 'Rápido y Furioso', 'Acción', 106, '14+', 'Un policía se infiltra en carreras ilegales', 'Rob Cohen', 6.8, '2001-06-22');
+    (id, titulo, genero, duracion, clasificacion, sinopsis, director, rating, estreno, portada) VALUES
+    (1, 'El Padrino', 'Drama', 175, '18+', 'La historia de la familia Corleone', 'Francis Ford Coppola', 9.2, '1972-03-24', 'assets/El-padrino.jpg'),
+    (2, 'El Padrino II', 'Drama', 202, '18+', 'La historia de la familia Corleone', 'Francis Ford Coppola', 9.0, '1974-12-20', 'assets/Elpadrino2.jpg'),
+    (3, 'Volver al Futuro', 'Ciencia Ficción', 116, '7+', 'Un joven viaja al pasado en un auto', 'Robert Zemeckis', 8.5, '1985-07-03', 'assets/Volver_al_Futuro_Poster.jpg'),
+    (4, 'Titanic', 'Drama', 195, '12+', 'Un barco se hunde en el Atlántico', 'James Cameron', 7.8, '1998-01-23', 'assets/Titanic.jpg'),
+    (5, 'El Señor de los Anillos: La Comunidad del Anillo', 'Fantasía', 178, '12+', 'Un anillo mágico debe ser destruído', 'Peter Jackson', 8.8, '2001-12-19', 'assets/ElSenorDeLosAnillos.jpg'),
+    (6, 'Rápido y Furioso', 'Acción', 106, '14+', 'Un policía se infiltra en carreras ilegales', 'Rob Cohen', 6.8, '2001-06-22', 'assets/RapidoYFurioso.jpg');
   `;
 
   /* TAREA: < Copiar los comentarios viejos > */
@@ -424,5 +425,59 @@ export class DbService {
     }
     this.listaPeliculas.next(items as any);
     });
+  }
+
+  async getPeliculaById(id: number): Promise<Pelicula> {
+    const query = "SELECT * FROM peliculas WHERE id = ?;";
+    try {
+      const result = await this.database.executeSql(query, [id]);
+      if (result.rows.length > 0) {
+        return {
+          id: result.rows.item(0).id,
+          titulo: result.rows.item(0).titulo,
+          genero: result.rows.item(0).genero,
+          duracion: result.rows.item(0).duracion,
+          clasificacion: result.rows.item(0).clasificacion,
+          sinopsis: result.rows.item(0).sinopsis,
+          director: result.rows.item(0).director,
+          rating: result.rows.item(0).rating,
+          estreno: result.rows.item(0).estreno,
+          portada: result.rows.item(0).portada || 'assets/rollo.jpg'
+        };
+      }
+      throw new Error('Película no encontrada');
+    } catch (e) {
+      console.error('Error fetching movie:', e);
+      throw e;
+    }
+  }
+
+  // Comentarios
+  async getComentariosPelicula(idPelicula: number): Promise<Comment[]> {
+    const query = `
+      SELECT c.*, u.nombre as nombre_usuario 
+      FROM comentarios_peliculas c
+      JOIN usuario u ON c.id_usuario = u.id
+      WHERE c.id_pelicula = ?
+      ORDER BY c.fecha DESC;
+    `;
+    try {
+      const result = await this.database.executeSql(query, [idPelicula]);
+      const comments: Comment[] = [];
+      for (let i = 0; i < result.rows.length; i++) {
+        comments.push({
+          id: result.rows.item(i).id,
+          id_pelicula: result.rows.item(i).id_pelicula,
+          id_usuario: result.rows.item(i).id_usuario,
+          comentario: result.rows.item(i).comentario,
+          fecha: result.rows.item(i).fecha,
+          nombre_usuario: result.rows.item(i).nombre_usuario
+        });
+      }
+      return comments;
+    } catch (e) {
+      console.error('Error fetching comments:', e);
+      throw e;
+    }
   }
 }

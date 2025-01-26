@@ -1,13 +1,74 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>pelicula</ion-title>
+    <ion-title style="background-color: #07c4c4;">
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+        <ion-back-button></ion-back-button>
+      </ion-buttons>
+      <div class="header-container">
+        <ion-img class="imagen" src="/assets/Logocine (1)-Photoroom.png"></ion-img>
+      </div>
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">pelicula</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="movie-container" *ngIf="pelicula">
+    <ion-card>
+      <div class="movie-content">
+        <h2>{{pelicula.titulo}}</h2>
+        <ion-img class="movie-poster" [src]="pelicula.portada"></ion-img>
+        <div class="movie-info">
+          <p><strong>Año:</strong> {{pelicula.estreno | date:'yyyy'}}</p>
+          <p><strong>Director:</strong> {{pelicula.director}}</p>
+          <p><strong>Género:</strong> {{pelicula.genero}}</p>
+          <p><strong>Duración:</strong> {{pelicula.duracion}} minutos</p>
+          <p><strong>Clasificación:</strong> {{pelicula.clasificacion}}</p>
+          <p><strong>Sinopsis:</strong> {{pelicula.sinopsis}}</p>
+          <ion-button (click)="shareMovie()" fill="clear">
+            <ion-icon name="share-social-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </ion-card>
+
+    <ion-card class="rating-card">
+      <ion-card-header>
+        <ion-card-title>Califica esta película</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="stars">
+          <ion-icon *ngFor="let star of stars" 
+                    [name]="star <= userRating ? 'star' : 'star-outline'"
+                    (click)="rateMovie(star)">
+          </ion-icon>
+        </div>
+        <p *ngIf="userRating">Tu calificación: {{userRating}} estrellas</p>
+        <p><strong>Calificación promedio:</strong> {{pelicula.rating}}/5</p>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-list class="movie-comments">
+      <ion-item *ngFor="let comment of comments">
+        <ion-label>
+          <h2>{{comment.nombre_usuario}}</h2>
+          <p>{{comment.fecha | date}}</p>
+          <p>{{comment.comentario}}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ion-card class="text-box">
+      <ion-card-content>
+        <ion-item>
+          <ion-textarea placeholder="Escribe un comentario" 
+                       [(ngModel)]="newComment"
+                       (input)="validateComment()">
+          </ion-textarea>
+        </ion-item>
+        <p class="error-message" *ngIf="errorMessage">{{errorMessage}}</p>
+        <ion-button expand="block" (click)="sendComment()">Enviar</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>

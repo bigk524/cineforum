@@ -37,7 +37,7 @@
         <h2>{{pelicula.titulo}}</h2>
         <p>{{pelicula.sinopsis}}</p>
       </ion-label>
-      <ion-button color="secondary" [routerLink]="['/pelicula', pelicula.id]">
+      <ion-button color="secondary" (click)="gotoMovie(pelicula.id)">
         leer más
       </ion-button>
     </ion-item>

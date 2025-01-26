@@ -51,10 +51,10 @@ export class HomePage implements OnInit {
     }
   }
 
- /*
+  /*
   async searchMovies(term: string) {
     if (!term) {
-      this.peliculas = [...this.dbService.movieCache];
+      this.peliculas = this.peliculas;
       return;
     }
 
@@ -63,10 +63,12 @@ export class HomePage implements OnInit {
     );
   }
 
+
   trackById(_index: number, pelicula: Pelicula): number {
     return pelicula.id;
   }
-*/
+
+  */
   async presentAlert(header: string, message: string) {
     const alert = await this.alertController.create({
       header,
@@ -75,5 +77,9 @@ export class HomePage implements OnInit {
     });
 
     await alert.present();
+  }
+
+  gotoMovie(id: number) {
+    this.router.navigate(['/pelicula', id]);
   }
 }

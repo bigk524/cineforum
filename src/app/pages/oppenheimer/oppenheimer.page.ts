@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
 import { ApiRestService } from 'src/app/services/api-rest.service';
+import { Share } from '@capacitor/share'; 
 
 @Component({
   selector: 'app-oppenheimer',
@@ -40,92 +41,101 @@ export class OppenheimerPage implements OnInit {
 
   sitios: any;
   constructor(
-     private alertController: AlertController,
-        private toastController: ToastController,
-        private router: Router,
-        private activatedRoute: ActivatedRoute,
-        private apiRest: ApiRestService
-      ) { 
-        this.activatedRoute.queryParams.subscribe(params => {
-          if (this.router.getCurrentNavigation()?.extras.state) {
-            this.user = this.router.getCurrentNavigation()?.extras?.state?.['user'];
-          }
-        });
-        // Move API call here and add error handling
-        this.apiRest.obtenerSitios("872585").subscribe({
-          next: (data) => {
-            this.sitios = data;
-            console.log('Sitios data:', JSON.stringify(this.sitios));
-          },
-          error: (error) => {
-            console.error('API Error:', error);
-            this.presentAlert('Error', 'No se pudieron obtener los sitios.');
-          }
-        });
-      } 
+    private alertController: AlertController,
+    private toastController: ToastController,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private apiRest: ApiRestService
+  ) {
+    this.activatedRoute.queryParams.subscribe(params => {
+      if (this.router.getCurrentNavigation()?.extras.state) {
+        this.user = this.router.getCurrentNavigation()?.extras?.state?.['user'];
+      }
+    });
 
-      async presentAlert(header: string, message: string) {
-        const alert = await this.alertController.create({
-          header: header,
-          message: message,
-          buttons: ['Ok']
-        });
-    
-        await alert.present();
+    this.apiRest.obtenerSitios("872585").subscribe({
+      next: (data) => {
+        this.sitios = data;
+        console.log('Sitios data:', JSON.stringify(this.sitios));
+      },
+      error: (error) => {
+        console.error('API Error:', error);
+        this.presentAlert('Error', 'No se pudieron obtener los sitios.');
       }
-    
-      async presentToast(msg: string) {
-        const toast = await this.toastController.create({
-          message: msg,
-          duration: 1500,
-          position: 'bottom'
-        });
-    
-        await toast.present();
+    });
+  }
+
+  async presentAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header: header,
+      message: message,
+      buttons: ['Ok']
+    });
+
+    await alert.present();
+  }
+
+  async presentToast(msg: string) {
+    const toast = await this.toastController.create({
+      message: msg,
+      duration: 1500,
+      position: 'bottom'
+    });
+
+    await toast.present();
+  }
+
+  banPost(id: any) {
+    for (let i = 0; i < this.comments.length; i++) {
+      if (this.comments[i].id == id) {
+        this.comments.splice(i, 1);
       }
-    
-      banPost(id: any) {
-    
-        for (let i = 0; i < this.comments.length; i++) {
-          if (this.comments[i].id == id) {
-            this.comments.splice(i, 1);
-          }
-        }
-    
-        this.presentToast("Publicación eliminada");
-      }
-    
-      validateComment() {
-        if (!this.newComment.trim()) {
-          this.errorMessage = 'El comentario no puede estar vacío.';
-        } else if (this.newComment.length < 5) {
-          this.errorMessage = 'El comentario debe tener al menos 5 caracteres.';
-        } else {
-          this.errorMessage = '';
-        }
-      }
-    
-      sendComment() {
-        this.validateComment();
-        if (this.errorMessage) return; // Evita enviar si hay error
-    
-        // Aquí iría la lógica para enviar el comentario
-        console.log('Comentario enviado:', this.newComment);
-        this.newComment = ''; // Limpiar el campo después de enviar
-      }
-        // ⭐ Nueva función para calificar la película
+    }
+
+    this.presentToast("Publicación eliminada");
+  }
+
+  validateComment() {
+    if (!this.newComment.trim()) {
+      this.errorMessage = 'El comentario no puede estar vacío.';
+    } else if (this.newComment.length < 5) {
+      this.errorMessage = 'El comentario debe tener al menos 5 caracteres.';
+    } else {
+      this.errorMessage = '';
+    }
+  }
+
+  sendComment() {
+    this.validateComment();
+    if (this.errorMessage) return;
+
+    console.log('Comentario enviado:', this.newComment);
+    this.newComment = '';
+  }
+
   rateMovie(rating: number) {
     this.userRating = rating;
     this.ratings.push(rating);
     this.calculateAverageRating();
   }
 
-  // ⭐ Cálculo del promedio de calificación
   calculateAverageRating() {
     const total = this.ratings.reduce((sum, rate) => sum + rate, 0);
     this.averageRating = this.ratings.length ? total / this.ratings.length : 0;
   }
 
+  // Nueva función para compartir la película
+  async shareMovie() {
+    try {
+      await Share.share({
+        title: 'Oppenheimer',
+        text: 'Te recomiendo ver Oppenheimer y toda su info en CineForum, una película fascinante con una historia atrapante.',
+        dialogTitle: 'Compartir película'
+      });
+    } catch (error) {
+      console.error('Error al compartir:', error);
+    }
+  }
+
   ngOnInit() {}
 }
- 
