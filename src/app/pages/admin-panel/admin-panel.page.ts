@@ -75,14 +75,12 @@ export class AdminPanelPage implements OnInit, OnDestroy {
   ngOnInit() { 
     this.subscription = this.dbService.fetchUsuario().subscribe({
       next: (data) => {
-        this.users = [...data]; // Create new array reference
+        this.users = data;
         console.log('Users loaded:', this.users);
       },
       error: (error) => console.error('Error loading users:', error)
     });
     
-    // Initial load
-    this.dbService.buscarUsuarios();
   }
 
   ngOnDestroy(): void {

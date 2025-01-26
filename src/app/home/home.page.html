@@ -29,7 +29,7 @@
   </div>
 
   <ion-list>
-    <ion-item *ngFor="let pelicula of peliculas$ | async">
+    <ion-item *ngFor="let pelicula of peliculas">
       <ion-thumbnail slot="start">
         <ion-img [src]="pelicula.portada"></ion-img>
       </ion-thumbnail>

@@ -16,7 +16,8 @@ import { Observable, Subscription } from 'rxjs';
 export class HomePage implements OnInit {
   role: string = '';
   searchTerm: string = '';
-  peliculas$!: Observable<Pelicula[]>;
+  peliculas!: Pelicula[];
+  private suscripcionPeliculas?: Subscription;
 
   constructor(
     private router: Router,
@@ -24,12 +25,7 @@ export class HomePage implements OnInit {
     private menuCtrl: MenuController,
     private nativeStorage: NativeStorage,
     private dbService: DbService,
-  ) {
-    this.ionViewWillOpen();
-    this.nativeStorage.getItem('rol').then(result => {
-      this.role = result;
-    });
-  }
+  ) {}
 
   ionViewWillOpen() {
     this.menuCtrl.enable(true);
@@ -37,7 +33,22 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit() {
-    this.peliculas$ = this.dbService.getMovies();
+    this.ionViewWillOpen();
+    this.nativeStorage.getItem('rol').then(result => {
+      this.role = result;
+    }); 
+  }
+
+  async ionViewWillEnter() {
+    this.dbService.fetchPeliculas().subscribe(result => {
+      this.peliculas = result;
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.suscripcionPeliculas) {
+      this.suscripcionPeliculas.unsubscribe();
+    }
   }
 
  /*

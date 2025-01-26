@@ -23,7 +23,7 @@
       <ion-item *ngFor="let user of users">
         <ion-label>{{ user.nombre }}</ion-label>
         <ion-button
-          *ngIf="!(estaBanneado(user.id) | async)&&user.id == 1"
+          *ngIf="!(estaBanneado(user.id) | async)&&user.id != 1"
           color="danger"
           (click)="banUser(user.id)">
           Bannear usuario
