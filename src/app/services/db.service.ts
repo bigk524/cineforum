@@ -374,21 +374,25 @@ export class DbService {
     }
   }
 
-  usuarioEstaBanneado(id: number): Observable<boolean> {
-    const query =
-      `SELECT COUNT(*) AS count 
-       FROM banneo
-       WHERE id_usuario = ?;
-      `;
+  private bannedUsers: Set<number> = new Set();
 
-    return from(this.database.executeSql(query, [id])
-      .then(res => {
-        return res.rows.items(0).count > 0;
-      })
-      .catch(e => {
-        this.presentAlert('Error buscando banneo', JSON.stringify(e));
-        throw new Error('Error buscando banneo');
-      }));
+  async loadBannedUsers() {
+    try {
+      const result = await this.database.executeSql(
+        'SELECT id_usuario FROM banneo GROUP BY id_usuario;',
+        []
+      );
+      this.bannedUsers.clear();
+      for (let i = 0; i < result.rows.length; i++) {
+        this.bannedUsers.add(result.rows.item(i).id_usuario);
+      }
+    } catch (e) {
+      console.error('Error loading banned users:', JSON.stringify(e));
+    }
+  }
+
+  isUserBanned(userId: number): boolean {
+    return this.bannedUsers.has(userId);
   }
 
   // Peliculas:
