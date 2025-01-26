@@ -17,7 +17,9 @@
   <div class="banner">
     <h1 class="subtitulo">Bienvenido a CineForum</h1>
     <p class="comparte"><em>Comparte y descubre opiniones sobre tus películas favoritas.</em></p>
-    <ion-searchbar [(ngModel)]="searchTerm"
+    <ion-searchbar 
+      [(ngModel)]="searchTerm"
+      (ionInput)="searchMovies($event)"
       placeholder="Buscar peliculas en el foro">
     </ion-searchbar>
     <ion-button color="secondary" [routerLink]="['/admin-panel']" *ngIf="role == 'admin'">

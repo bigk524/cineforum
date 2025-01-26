@@ -17,14 +17,30 @@
     <h2 class="titulo">Customizar Perfil</h2>
     <ion-list class="opciones-perfil-list">
       <ion-item>
-        <ion-input placeholder="Nombre de usuario" type="text"></ion-input>
+        <ion-input 
+          label="Nombre de usuario" 
+          type="text" 
+          [(ngModel)]="usuario.nombre"
+          required>
+        </ion-input>
       </ion-item>
+      
       <ion-item>
-        <ion-textarea placeholder="Biografía"></ion-textarea>
+        <ion-textarea 
+          label="Biografía" 
+          [(ngModel)]="usuario.descripcion">
+        </ion-textarea>
       </ion-item>
+      
       <ion-item>
-        <ion-input placeholder="Correo" type="email"></ion-input>
+        <ion-input 
+          label="Correo" 
+          type="email" 
+          [(ngModel)]="usuario.email"
+          required>
+        </ion-input>
       </ion-item>
+      
       <ion-item>
         <ion-label>Imagen de Perfil</ion-label>
         <ion-button fill="clear" slot="end" (click)="tomarFoto()">
@@ -33,21 +49,13 @@
       </ion-item>
     </ion-list>
 
-    <!-- Mostrar la foto tomada -->
-    <div class="vista-previa-foto" *ngIf="imagenPerfil">
-      <h3>Vista Previa de la Foto</h3>
-      <img
-        [src]="imagenPerfil"
-        alt="Foto del perfil"
-        class="foto-previa"
-      />
-      <ion-button
-        expand="block"
-        color="success"
-        (click)="guardarFotoEnBaseDeDatos(imagenPerfil)"
-      >
-        Confirmar y Guardar Foto
-      </ion-button>
+    <!-- Preview de la foto -->
+    <div *ngIf="imagenPerfil" class="profile-image-preview">
+      <img [src]="imagenPerfil" alt="Foto del perfil"/>
     </div>
+
+    <ion-button expand="block" (click)="actualizarPerfil()">
+      Guardar Cambios
+    </ion-button>
   </div>
 </ion-content>

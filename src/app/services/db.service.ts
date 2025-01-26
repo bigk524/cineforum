@@ -270,7 +270,7 @@ export class DbService {
             clave: res.rows.item(i).clave,
             descripcion: res.rows.item(i).descripcion,
             rol: res.rows.item(i).rol,
-            foto: res.rows.item(i).foto
+            foto: res.rows.item(i).foto || 'assets/lego3.jpg'
           });
         }
       }
@@ -438,6 +438,71 @@ export class DbService {
     return this.bannedUsers.has(userId);
   }
 
+  async updateUser(usuario: Usuario): Promise<void> {
+    try {
+      // Validar que el usuario y el email no estén tomados
+      const currentUser = await this.getUserById(usuario.id);
+      
+      if (currentUser.nombre !== usuario.nombre) {
+        const nombreExiste = await firstValueFrom(await this.existeNombre(usuario.nombre));
+        if (nombreExiste) {
+          throw new Error('El nombre de usuario ya está en uso');
+        }
+      }
+  
+      if (currentUser.email !== usuario.email) {
+        const emailExiste = await firstValueFrom(await this.existeEmail(usuario.email));
+        if (emailExiste) {
+          throw new Error('El correo electrónico ya está en uso');
+        }
+      }
+  
+      const query = `
+        UPDATE usuario 
+        SET nombre = ?,
+            email = ?,
+            descripcion = ?,
+            foto = ?
+        WHERE id = ?;
+      `;
+  
+      await this.database.executeSql(query, [
+        usuario.nombre,
+        usuario.email,
+        usuario.descripcion,
+        usuario.foto,
+        usuario.id
+      ]);
+  
+      await this.buscarUsuarios(); // Refresh users list
+    } catch (e) {
+      console.error('Error updating user:', e);
+      throw e;
+    }
+  }
+  
+  async getUserById(id: number): Promise<Usuario> {
+    const query = `SELECT * FROM usuario WHERE id = ?;`;
+    try {
+      const result = await this.database.executeSql(query, [id]);
+      if (result.rows.length > 0) {
+        return {
+          id: result.rows.item(0).id,
+          nombre: result.rows.item(0).nombre,
+          email: result.rows.item(0).email,
+          clave: result.rows.item(0).clave,
+          descripcion: result.rows.item(0).descripcion,
+          rol: result.rows.item(0).rol,
+          foto: result.rows.item(0).foto
+        };
+      }
+      throw new Error('Usuario no encontrado');
+    } catch (e) {
+      console.error('Error fetching user:', e);
+      throw e;
+    }
+  }
+
   // Peliculas:
 
   private listaPeliculas = new BehaviorSubject<Pelicula[]>([]);
@@ -570,6 +635,32 @@ export class DbService {
       await this.database.executeSql(query, [idPelicula, idUsuario, comentario, fecha]);
     } catch (e) {
       console.error('Error adding comment:', e);
+      throw e;
+    }
+  }
+  
+  async getUserComments(userId: number): Promise<any[]> {
+    const query = `
+      SELECT c.*, p.titulo as pelicula_titulo
+      FROM comentarios_peliculas c
+      JOIN peliculas p ON c.id_pelicula = p.id
+      WHERE c.id_usuario = ?
+      ORDER BY c.fecha DESC;
+    `;
+    try {
+      const result = await this.database.executeSql(query, [userId]);
+      const comments = [];
+      for (let i = 0; i < result.rows.length; i++) {
+        comments.push({
+          id: result.rows.item(i).id,
+          comentario: result.rows.item(i).comentario,
+          fecha: result.rows.item(i).fecha,
+          pelicula_titulo: result.rows.item(i).pelicula_titulo
+        });
+      }
+      return comments;
+    } catch (e) {
+      console.error('Error fetching user comments:', e);
       throw e;
     }
   }

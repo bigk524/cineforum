@@ -1,5 +1,8 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
+import { Component, OnInit } from '@angular/core';
+import { DbService } from 'src/app/services/db.service';
+import { Usuario } from 'src/app/services/usuario';
+import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-perfil',
@@ -8,60 +11,43 @@ import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
   standalone: false,
 })
 export class PerfilPage implements OnInit {
+  usuario: Usuario = {
+    id: 0,
+    nombre: '',
+    email: '',
+    clave: '',
+    descripcion: '',
+    rol: 0,
+    foto: null
+  };
   imagenPerfil: string | null = null;
+  userComments: any[] = [];
 
-  posts = [
-    {
-      title: "Post 1",
-      content: "Pudo haber sido mejor."
-    },
-    {
-      title: "Post 2",
-      content: "No me gustó."
-    },
-    {
-      title: "Post 3",
-      content: "Me encantó."
+  constructor(
+    private dbService: DbService,
+    private nativeStorage: NativeStorage,
+    private router: Router
+  ) {}
+
+  async ngOnInit() {
+    try {
+      const userData = await this.nativeStorage.getItem('usuario');
+      const userFromDb = await this.dbService.getUserById(userData.id);
+      this.usuario = userFromDb;
+      this.imagenPerfil = this.usuario.foto as string;
+      this.userComments = await this.dbService.getUserComments(this.usuario.id);
+    } catch (error) {
+      console.error('Error loading user data:', error);
+      this.router.navigate(['/login']);
     }
-  ];
-
-  constructor(private cd: ChangeDetectorRef, private sqlite: SQLite) {}
-
-  ngOnInit() {
-    this.cargarFotoPerfil(); 
   }
 
-  ionViewWillEnter() {
-    this.cargarFotoPerfil(); 
-    this.cd.detectChanges();
-  }
-
-  cargarFotoPerfil() {
-    this.sqlite.create({
-      name: 'cineforum.db',
-      location: 'default'
-    }).then((db: SQLiteObject) => {
-      // Supongo que tienes un identificador de usuario guardado
-      let userId = 1;  // Cambiar por el ID real del usuario
-
-      db.executeSql('SELECT foto FROM usuario WHERE id = ?', [userId])
-        .then((res) => {
-          if (res.rows.length > 0) {
-            this.imagenPerfil = res.rows.item(0).foto;
-          } else {
-            console.log('No se encontró la foto');
-          }
-        })
-        .catch((error) => {
-          console.log('Error al cargar la foto:', error);
-        });
-    }).catch((error) => {
-      console.log('Error al abrir la base de datos:', error);
-    });
+  editProfile() {
+    this.router.navigate(['/opciones-perfil']);
   }
 
   logout() {
-    // Aquí va la lógica de logout
+    this.nativeStorage.clear();
+    this.router.navigate(['/login']);
   }
 }
-

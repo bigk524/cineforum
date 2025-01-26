@@ -17,6 +17,7 @@ export class HomePage implements OnInit {
   role: string = '';
   searchTerm: string = '';
   peliculas!: Pelicula[];
+  private allPeliculas!: Pelicula[];
   private suscripcionPeliculas?: Subscription;
 
   constructor(
@@ -43,6 +44,11 @@ export class HomePage implements OnInit {
     this.dbService.fetchPeliculas().subscribe(result => {
       this.peliculas = result;
     });
+
+    this.dbService.fetchPeliculas().subscribe(result => {
+      this.allPeliculas = result;
+      this.peliculas = result;
+    });
   }
 
   ngOnDestroy() {
@@ -52,17 +58,15 @@ export class HomePage implements OnInit {
   }
 
   
-  async searchMovies(term: string) {
+  async searchMovies(event: any) {
+    const term = event.target.value.toLowerCase();
     if (!term) {
-      this.dbService.fetchPeliculas().subscribe(result => {
-        this.peliculas = result;
-      });
-      return;
+      this.peliculas = [...this.allPeliculas];
+    } else {
+      this.peliculas = this.allPeliculas.filter(movie => 
+        movie.titulo.toLowerCase().includes(term)
+      );
     }
-
-    this.peliculas = this.peliculas.filter(movie => 
-      movie.titulo.toLowerCase().includes(term.toLowerCase())
-    );
   }
 
 

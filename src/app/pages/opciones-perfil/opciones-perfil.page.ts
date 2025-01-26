@@ -1,96 +1,87 @@
 import { Component, OnInit } from '@angular/core';
-import { Camera, CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
-import { NavController } from '@ionic/angular';
-import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
+import { Camera, CameraResultType } from '@capacitor/camera';
+import { AlertController, ToastController } from '@ionic/angular';
+import { DbService } from 'src/app/services/db.service';
+import { Usuario } from 'src/app/services/usuario';
+import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 
 @Component({
   selector: 'app-opciones-perfil',
   templateUrl: './opciones-perfil.page.html',
   styleUrls: ['./opciones-perfil.page.scss'],
-  standalone: false,
-  providers: [Camera, SQLite], // Inyectamos el servicio de SQLite
+  standalone: false
 })
 export class OpcionesPerfilPage implements OnInit {
-  imagenPerfil: string | null = null;
-  userId: number = 2; // Reemplaza esto con el ID dinámico del usuario
+  usuario: Usuario = {
+    id: 0,
+    nombre: '',
+    email: '',
+    clave: '',
+    descripcion: '',
+    rol: 0,
+    foto: null
+  };
+  imagenPerfil: string | undefined;
 
   constructor(
-    private camera: Camera,
-    private navCtrl: NavController,
-    private sqlite: SQLite
-  ) {}
-  ngOnInit(): void {
-    throw new Error('Method not implemented.');
+    private dbService: DbService,
+    private alertController: AlertController,
+    private toastController: ToastController,
+    private nativeStorage: NativeStorage
+  ) { }
+
+  async ngOnInit() {
+    try {
+      const userData = await this.nativeStorage.getItem('usuario');
+      const userFromDb = await this.dbService.getUserById(userData.id);
+      this.usuario = userFromDb;
+      this.imagenPerfil = this.usuario.foto as string;
+    } catch (error) {
+      console.error('Error loading user data:', error);
+      this.presentAlert('Error', 'No se pudo cargar la información del usuario');
+    }
   }
 
-
-
-
-  // Función para tomar una foto
-  tomarFoto() {
-    const opciones: CameraOptions = {
-      quality: 90,
-      destinationType: this.camera.DestinationType.DATA_URL,
-      encodingType: this.camera.EncodingType.JPEG,
-      mediaType: this.camera.MediaType.PICTURE,
-      allowEdit: false,
-    };
-
-    this.camera.getPicture(opciones).then(
-      (imagenData) => {
-        const imagenBase64 = 'data:image/jpeg;base64,' + imagenData;
-        this.imagenPerfil = imagenBase64; // Mostrar la foto en la página
-        this.guardarFotoEnBaseDeDatos(imagenData); // Guardar en la base de datos
-      },
-      (err) => {
-        console.log('Error al tomar la foto:', err);
-      }
-    );
+  async actualizarPerfil() {
+    try {
+      await this.dbService.updateUser(this.usuario);
+      await this.nativeStorage.setItem('usuario', this.usuario);
+      this.presentToast('Perfil actualizado correctamente');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      this.presentAlert('Error', error instanceof Error ? error.message : 'Error al actualizar el perfil');
+    }
   }
 
-  // Guardar la foto en SQLite
-  guardarFotoEnBaseDeDatos(imagenData: string) {
-    const blobFoto = this.base64ToBlob(imagenData); // Convertir Base64 a BLOB
-
-    this.sqlite
-      .create({
-        name: 'cineforum.db',
-        location: 'default',
-      })
-      .then((db: SQLiteObject) => {
-        db.executeSql('UPDATE usuario SET foto = ? WHERE id = ?', [
-          blobFoto,
-          this.userId,
-        ])
-          .then(() => {
-            console.log('Foto guardada correctamente');
-          })
-          .catch((error) => {
-            console.log('Error al guardar la foto:', error);
-          });
-      })
-      .catch((error) => {
-        console.log('Error al abrir la base de datos:', error);
+  async tomarFoto() {
+    try {
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.DataUrl
       });
+      this.imagenPerfil = image.dataUrl;
+      this.usuario.foto = image.dataUrl;
+    } catch (error) {
+      console.error('Error taking photo:', error);
+    }
   }
 
-  // Convertir Base64 a BLOB
-  base64ToBlob(base64Data: string): Uint8Array {
-    const byteString = atob(base64Data);
-    const arrayBuffer = new Uint8Array(byteString.length);
-    for (let i = 0; i < byteString.length; i++) {
-      arrayBuffer[i] = byteString.charCodeAt(i);
-    }
-    return arrayBuffer;
+  async presentAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
-  // Convertir un BLOB a Base64
-  blobToBase64(blob: any): string {
-    let binary = '';
-    const bytes = new Uint8Array(blob);
-    for (let i = 0; i < bytes.byteLength; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    return 'data:image/jpeg;base64,' + btoa(binary);
+  async presentToast(message: string) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      position: 'bottom'
+    });
+    await toast.present();
   }
 }

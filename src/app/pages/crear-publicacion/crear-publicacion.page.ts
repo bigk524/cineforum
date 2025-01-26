@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { Camera } from '@awesome-cordova-plugins/camera/ngx';
+import { Camera, CameraResultType } from '@capacitor/camera';
 import { AlertController } from '@ionic/angular';
 import { DbService } from 'src/app/services/db.service';
 import { Pelicula } from 'src/app/services/pelicula';
@@ -28,7 +28,6 @@ export class CrearPublicacionPage {
     private dbService: DbService,
     private router: Router,
     private alertController: AlertController,
-    private camera: Camera,
   ) {}
 
   async crearPublicacion() {
@@ -79,14 +78,13 @@ export class CrearPublicacionPage {
     }
   }
 
-  takePhoto() {
-    this.camera.getPicture({
+  takePhoto = async () => {
+    const image = await Camera.getPhoto({
       quality: 90,
-      destinationType: this.camera.DestinationType.FILE_URI,
-      encodingType: this.camera.MediaType.PICTURE,
-      allowEdit: false,
-    }).then(imageData => {
-      this.newMovie.portada = imageData;
-    })
+      allowEditing: false,
+      resultType: CameraResultType.Uri
+    });
+
+    this.newMovie.portada = image.webPath;
   }
 }

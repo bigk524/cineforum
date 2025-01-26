@@ -20,30 +20,45 @@
     </ion-avatar>
 
     <!-- Nombre de usuario -->
-    <h2 class="username">Pepe Torres</h2>
+    <h2 class="username">{{usuario.nombre}}</h2>
+
+    <!-- Email -->
+    <p class="email">{{usuario.email}}</p>
 
     <!-- Biografía -->
     <div class="bio-section">
-      <p>Soy Pepe, un fanático de las películas.</p>
+      <p>{{usuario.descripcion || 'No hay descripción disponible'}}</p>
     </div>
 
-    <!-- Lista de posts -->
-    <ion-list class="posts-list">
-      <ion-list-header>
-        <h3>Posts</h3>
-      </ion-list-header>
-      <ion-item *ngFor="let post of posts">
+    <!-- Botones de acción -->
+    <div class="action-buttons">
+      <ion-button expand="block" (click)="editProfile()">
+        <ion-icon slot="start" name="create-outline"></ion-icon>
+        Editar Perfil
+      </ion-button>
+      
+      <ion-button expand="block" color="danger" (click)="logout()">
+        <ion-icon slot="start" name="log-out-outline"></ion-icon>
+        Cerrar Sesión
+      </ion-button>
+    </div>
+  </div>
+  <div class="comments-section">
+    <h3 class="section-title">Mis Comentarios</h3>
+    <ion-list>
+      <ion-item *ngFor="let comment of userComments">
         <ion-label>
-          <h4>{{ post.title }}</h4>
-          <p>{{ post.content }}</p>
+          <h2>{{comment.pelicula_titulo}}</h2>
+          <p class="comment-date">{{comment.fecha | date}}</p>
+          <p class="comment-text">{{comment.comentario}}</p>
+        </ion-label>
+      </ion-item>
+      
+      <ion-item *ngIf="userComments.length === 0">
+        <ion-label>
+          <p>No has realizado comentarios aún</p>
         </ion-label>
       </ion-item>
     </ion-list>
-
-    <!-- Botón para ver posts baneados -->
-    <ion-button expand="block" color="warning" class="banned-posts-btn" [routerDirection]="'root'" [routerLink]="['/posts-baneados']">
-      Ver posts baneados
-      <ion-icon name="warning" slot="end"></ion-icon>
-    </ion-button>
   </div>
 </ion-content>
