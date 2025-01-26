@@ -42,7 +42,6 @@ export class DbService {
       clasificacion VARCHAR(5),
       sinopsis    TEXT,
       director    VARCHAR(50),
-      rating      DECIMAL(2,1),
       estreno     DATE,
       portada     BLOB
     );
@@ -79,6 +78,19 @@ export class DbService {
     );
   `;
 
+  tablaRatigs = `
+    CREATE TABLE IF NOT EXISTS ratings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id_pelicula INTEGER,
+      id_usuario INTEGER,
+      rating INTEGER,
+      fecha DATE,
+      FOREIGN KEY (id_pelicula) REFERENCES peliculas (id),
+      FOREIGN KEY (id_usuario) REFERENCES usuario (id),
+      UNIQUE(id_pelicula, id_usuario)
+    );
+  `;
+
   registroRoles = `
     INSERT OR IGNORE INTO roles (id, nombre) VALUES (1, 'admin'), (2, 'usuario');
   `;
@@ -95,13 +107,13 @@ export class DbService {
 
   registroPeliculas = `
     INSERT OR IGNORE INTO peliculas 
-    (id, titulo, genero, duracion, clasificacion, sinopsis, director, rating, estreno, portada) VALUES
-    (1, 'El Padrino', 'Drama', 175, '18+', 'La historia de la familia Corleone', 'Francis Ford Coppola', 9.2, '1972-03-24', 'assets/El-padrino.jpg'),
-    (2, 'El Padrino II', 'Drama', 202, '18+', 'La historia de la familia Corleone', 'Francis Ford Coppola', 9.0, '1974-12-20', 'assets/Elpadrino2.jpg'),
-    (3, 'Volver al Futuro', 'Ciencia Ficción', 116, '7+', 'Un joven viaja al pasado en un auto', 'Robert Zemeckis', 8.5, '1985-07-03', 'assets/Volver_al_Futuro_Poster.jpg'),
-    (4, 'Titanic', 'Drama', 195, '12+', 'Un barco se hunde en el Atlántico', 'James Cameron', 7.8, '1998-01-23', 'assets/Titanic.jpg'),
-    (5, 'El Señor de los Anillos: La Comunidad del Anillo', 'Fantasía', 178, '12+', 'Un anillo mágico debe ser destruído', 'Peter Jackson', 8.8, '2001-12-19', 'assets/ElSenorDeLosAnillos.jpg'),
-    (6, 'Rápido y Furioso', 'Acción', 106, '14+', 'Un policía se infiltra en carreras ilegales', 'Rob Cohen', 6.8, '2001-06-22', 'assets/RapidoYFurioso.jpg');
+    (id, titulo, genero, duracion, clasificacion, sinopsis, director, estreno, portada) VALUES
+    (1, 'El Padrino', 'Drama', 175, '18+', 'La historia de la familia Corleone', 'Francis Ford Coppola', '1972-03-24', 'assets/El-padrino.jpg'),
+    (2, 'El Padrino II', 'Drama', 202, '18+', 'La historia de la familia Corleone', 'Francis Ford Coppola', '1974-12-20', 'assets/Elpadrino2.jpg'),
+    (3, 'Volver al Futuro', 'Ciencia Ficción', 116, '7+', 'Un joven viaja al pasado en un auto', 'Robert Zemeckis', '1985-07-03', 'assets/Volver_al_Futuro_Poster.jpg'),
+    (4, 'Titanic', 'Drama', 195, '12+', 'Un barco se hunde en el Atlántico', 'James Cameron', '1998-01-23', 'assets/Titanic.jpg'),
+    (5, 'El Señor de los Anillos: La Comunidad del Anillo', 'Fantasía', 178, '12+', 'Un anillo mágico debe ser destruído', 'Peter Jackson', '2001-12-19', 'assets/ElSenorDeLosAnillos.jpg'),
+    (6, 'Rápido y Furioso', 'Acción', 106, '14+', 'Un policía se infiltra en carreras ilegales', 'Rob Cohen', '2001-06-22', 'assets/RapidoYFurioso.jpg');
   `;
 
   /* TAREA: < Copiar los comentarios viejos > */
@@ -136,8 +148,36 @@ export class DbService {
   registroBanneo = `
     INSERT OR IGNORE INTO banneo 
     (id, id_usuario, fecha, razon) VALUES 
-    (1, 5, '2021-06-01', 'Comentarios ofensivos');
+    (1, 5, '2024-06-01', 'Comentarios ofensivos');
   `;
+
+  registroRatings = `
+  INSERT OR IGNORE INTO ratings (id, id_pelicula, id_usuario, rating, fecha) VALUES 
+  -- El Padrino (ID: 1)
+  (1, 1, 2, 5, '2024-06-01'),
+  (2, 1, 3, 5, '2024-06-02'),
+  (3, 1, 4, 4, '2021-06-03'),
+  -- El Padrino II (ID: 2)
+  (4, 2, 2, 5, '2024-06-04'),
+  (5, 2, 3, 4, '2024-06-05'),
+  (6, 2, 4, 5, '2024-06-06'),
+  -- Volver al Futuro (ID: 3)
+  (7, 3, 2, 4, '2024-06-07'),
+  (8, 3, 3, 5, '2024-06-08'),
+  (9, 3, 4, 4, '2024-06-09'),
+  -- Titanic (ID: 4)
+  (10, 4, 2, 4, '2024-06-10'),
+  (11, 4, 3, 4, '2024-06-11'),
+  (12, 4, 4, 3, '2024-06-12'),
+  -- El Señor de los Anillos (ID: 5)
+  (13, 5, 2, 5, '2024-06-13'),
+  (14, 5, 3, 4, '2024-06-14'),
+  (15, 5, 4, 5, '2024-06-15'),
+  -- Rápido y Furioso (ID: 6)
+  (16, 6, 2, 3, '2024-06-16'),
+  (17, 6, 3, 4, '2024-06-17'),
+  (18, 6, 4, 3, '2024-06-18');
+`;
 
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
@@ -187,6 +227,7 @@ export class DbService {
       await this.database.executeSql(this.tablaPeliculas, []);
       await this.database.executeSql(this.tablaTendencias, []);
       await this.database.executeSql(this.tablaComentariosPeliculas, []);
+      await this.database.executeSql(this.tablaRatigs, []);
     } catch (e) {
       this.presentAlert('Error al crear tablas', JSON.stringify(e));
       return;
@@ -198,6 +239,7 @@ export class DbService {
       await this.database.executeSql(this.registroPeliculas, []);
       await this.database.executeSql(this.registroTendencias, []);
       await this.database.executeSql(this.registroComentariosPeliculas, []);
+      await this.database.executeSql(this.registroRatings, []);
 
       await this.buscarPeliculas();
       await this.buscarUsuarios();
@@ -404,8 +446,15 @@ export class DbService {
     return this.listaPeliculas.asObservable();
   }
 
-  async buscarPeliculas() {   
-    return await this.database.executeSql("SELECT * FROM peliculas;", []).then(result=> {
+  async buscarPeliculas() {
+    return await this.database.executeSql(
+      `SELECT p.*, ROUND(AVG(r.rating), 1) as rating
+       FROM peliculas p 
+       LEFT JOIN ratings r 
+       ON p.id = r.id_pelicula
+       GROUP BY p.id;
+     `, []
+    ).then(result => {
       let items: Pelicula[] = [];
       if (result.rows.length > 0) {
         for (let i = 0; i < result.rows.length; i++) {
@@ -417,18 +466,24 @@ export class DbService {
             clasificacion: result.rows.item(i).clasificacion,
             sinopsis: result.rows.item(i).sinopsis,
             director: result.rows.item(i).director,
-            rating: result.rows.item(i).rating,
             estreno: result.rows.item(i).estreno,
-            portada: result.rows.item(i).portada || 'assets/rollo.jpg'
-        })
+            portada: result.rows.item(i).portada || 'assets/rollo.jpg',
+            rating: result.rows.item(i).rating || 0
+          })
+        }
       }
-    }
-    this.listaPeliculas.next(items as any);
+      this.listaPeliculas.next(items as any);
     });
   }
 
   async getPeliculaById(id: number): Promise<Pelicula> {
-    const query = "SELECT * FROM peliculas WHERE id = ?;";
+    const query = `SELECT 
+                    p.*,
+                    ROUND(AVG(r.rating), 1) AS rating
+                   FROM peliculas p                     
+                   LEFT JOIN ratings r ON p.id = r.id_pelicula
+                   WHERE p.id = ?
+                   GROUP BY p.id`;
     try {
       const result = await this.database.executeSql(query, [id]);
       if (result.rows.length > 0) {
@@ -440,14 +495,38 @@ export class DbService {
           clasificacion: result.rows.item(0).clasificacion,
           sinopsis: result.rows.item(0).sinopsis,
           director: result.rows.item(0).director,
-          rating: result.rows.item(0).rating,
           estreno: result.rows.item(0).estreno,
-          portada: result.rows.item(0).portada || 'assets/rollo.jpg'
+          portada: result.rows.item(0).portada || 'assets/rollo.jpg',
+          rating: result.rows.item(0).rating || 0
         };
       }
       throw new Error('Película no encontrada');
     } catch (e) {
-      console.error('Error fetching movie:', e);
+      this.presentAlert('Error al buscar pelicula', JSON.stringify(e));
+      console.error('Error fetching movie:', JSON.stringify(e));
+      throw e;
+    }
+  }
+
+  async addPelicula(pelicula: Pelicula): Promise<void> {
+    const query = `
+      INSERT INTO peliculas (titulo, genero, duracion, clasificacion, sinopsis, director, estreno, portada)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+    `;
+    try {
+      await this.database.executeSql(query, [
+        pelicula.titulo,
+        pelicula.genero,
+        pelicula.duracion,
+        pelicula.clasificacion,
+        pelicula.sinopsis,
+        pelicula.director,
+        pelicula.estreno,
+        pelicula.portada
+      ]);
+      await this.buscarPeliculas(); // Refresh movies list
+    } catch (e) {
+      console.error('Error adding movie:', e);
       throw e;
     }
   }
@@ -477,6 +556,70 @@ export class DbService {
       return comments;
     } catch (e) {
       console.error('Error fetching comments:', e);
+      throw e;
+    }
+  }
+
+  async addComentario(idPelicula: number, idUsuario: number, comentario: string): Promise<void> {
+    const fecha = new Date().toISOString();
+    const query = `
+      INSERT INTO comentarios_peliculas (id_pelicula, id_usuario, comentario, fecha)
+      VALUES (?, ?, ?, ?);
+    `;
+    try {
+      await this.database.executeSql(query, [idPelicula, idUsuario, comentario, fecha]);
+    } catch (e) {
+      console.error('Error adding comment:', e);
+      throw e;
+    }
+  }
+
+  // Ratings
+
+  async getUserRating(idPelicula: number, idUsuario: number): Promise<number> {
+    const query = "SELECT rating FROM ratings WHERE id_pelicula = ? AND id_usuario = ?;";
+    try {
+      const result = await this.database.executeSql(query, [idPelicula, idUsuario]);
+      if (result.rows.length > 0) {
+        return result.rows.item(0).rating;
+      }
+      return 0;
+    } catch (e) {
+      console.error('Error getting user rating:', e);
+      return 0;
+    }
+  }
+
+  async setUserRating(idPelicula: number, idUsuario: number, rating: number): Promise<void> {
+    const date = new Date().toISOString();
+    const query = `
+    INSERT OR REPLACE INTO ratings (id_pelicula, id_usuario, rating, fecha)
+    VALUES (?, ?, ?, ?);
+  `;
+    try {
+      await this.database.executeSql(query, [idPelicula, idUsuario, rating, date]);
+      await this.updateMovieRating(idPelicula);
+    } catch (e) {
+      console.error('Error setting rating:', e);
+      throw e;
+    }
+  }
+
+  async updateMovieRating(idPelicula: number): Promise<void> {
+    const query = `
+    UPDATE peliculas 
+    SET rating = (
+      SELECT ROUND(AVG(rating), 1) 
+      FROM ratings 
+      WHERE id_pelicula = ?
+    )
+    WHERE id = ?;
+  `;
+    try {
+      await this.database.executeSql(query, [idPelicula, idPelicula]);
+      await this.buscarPeliculas(); // Refresh movies list
+    } catch (e) {
+      console.error('Error updating movie rating:', e);
       throw e;
     }
   }

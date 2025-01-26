@@ -10,11 +10,12 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx' 
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { Camera } from '@awesome-cordova-plugins/camera/ngx';
 
 @NgModule({
   declarations: [AppComponent],
   imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, provideAnimationsAsync(), SQLite, NativeStorage],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, provideAnimationsAsync(), SQLite, NativeStorage, Camera],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

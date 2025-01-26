@@ -6,7 +6,7 @@ export class Pelicula {
     clasificacion!: string;
     sinopsis!: string;
     director!: string;
-    rating!: number;
     estreno!: string;
     portada!: any;
+    rating?: number;
 }
