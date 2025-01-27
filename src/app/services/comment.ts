@@ -5,4 +5,5 @@ export class Comment {
     comentario!: string;
     fecha!: string;
     nombre_usuario?: string;
+    banned!: boolean;
   }

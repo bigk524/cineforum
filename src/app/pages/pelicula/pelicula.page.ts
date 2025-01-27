@@ -23,6 +23,7 @@ export class PeliculaPage implements OnInit {
   ratings: number[] = [];
   averageRating: number = 0;
   currentUserId: number = 0;
+  isAdmin: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -36,6 +37,10 @@ export class PeliculaPage implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     this.nativeStorage.getItem('usuario').then(result => {
       this.currentUserId = result.id;
+    });
+
+    this.nativeStorage.getItem('rol').then(result => {
+      this.isAdmin = result === 'admin';
     });
     if (id) {
       try {
@@ -132,6 +137,42 @@ export class PeliculaPage implements OnInit {
     }
   }
 
+  async banComment(commentId: number) {
+    const alert = await this.alertController.create({
+      header: 'Banear Comentario',
+      inputs: [
+        {
+          name: 'reason',
+          type: 'text',
+          placeholder: 'Razón del baneo'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Banear',
+          handler: async (data) => {
+            if (data.reason) {
+              try {
+                await this.dbService.banComment(commentId, data.reason);
+                this.comments = await this.dbService.getComentariosPelicula(this.pelicula!.id);
+                this.presentToast('Comentario baneado');
+              } catch (error) {
+                console.error('Error banning comment:', error);
+                this.presentAlert('Error', 'No se pudo banear el comentario');
+              }
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
   async rateMovie(rating: number) {
     if (!this.currentUserId || !this.pelicula) {
       this.presentAlert('Error', 'Debes iniciar sesión para calificar');
@@ -149,6 +190,8 @@ export class PeliculaPage implements OnInit {
       this.presentAlert('Error', 'No se pudo guardar la calificación');
     }
   }
+
+  
 
   calculateAverageRating() {
     const total = this.ratings.reduce((sum, rate) => sum + rate, 0);

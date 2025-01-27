@@ -50,12 +50,19 @@
     </ion-card>
 
     <ion-list class="movie-comments">
-      <ion-item *ngFor="let comment of comments">
+      <ion-item *ngFor="let comment of comments" [class.banned-comment]="comment.banned">
         <ion-label>
           <h2>{{comment.nombre_usuario}}</h2>
           <p>{{comment.fecha | date}}</p>
           <p>{{comment.comentario}}</p>
         </ion-label>
+        <ion-button 
+          *ngIf="isAdmin && !comment.banned" 
+          color="danger" 
+          fill="clear" 
+          (click)="banComment(comment.id)">
+      <ion-icon name="ban-outline"></ion-icon>
+    </ion-button>
       </ion-item>
     </ion-list>
 

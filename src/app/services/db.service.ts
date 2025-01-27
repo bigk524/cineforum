@@ -91,6 +91,16 @@ export class DbService {
     );
   `;
 
+  tablaBannedComments = `
+  CREATE TABLE IF NOT EXISTS banned_comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_comentario INTEGER,
+    fecha DATE,
+    razon TEXT,
+    FOREIGN KEY (id_comentario) REFERENCES comentarios_peliculas (id)
+  );
+  `;
+
   registroRoles = `
     INSERT OR IGNORE INTO roles (id, nombre) VALUES (1, 'admin'), (2, 'usuario');
   `;
@@ -212,6 +222,7 @@ export class DbService {
         location: 'default'
       }).then((db: SQLiteObject) => {
         this.database = db;
+        this.database.executeSql('PRAGMA foreign_keys = ON;', []);
         this.crearTablas();
       }).catch((error) => {
         this.presentAlert('Error al crear la base de datos:', JSON.stringify(error));
@@ -227,6 +238,7 @@ export class DbService {
       await this.database.executeSql(this.tablaPeliculas, []);
       await this.database.executeSql(this.tablaTendencias, []);
       await this.database.executeSql(this.tablaComentariosPeliculas, []);
+      await this.database.executeSql(this.tablaBannedComments, []);
       await this.database.executeSql(this.tablaRatigs, []);
     } catch (e) {
       this.presentAlert('Error al crear tablas', JSON.stringify(e));
@@ -442,21 +454,21 @@ export class DbService {
     try {
       // Validar que el usuario y el email no estén tomados
       const currentUser = await this.getUserById(usuario.id);
-      
+
       if (currentUser.nombre !== usuario.nombre) {
         const nombreExiste = await firstValueFrom(await this.existeNombre(usuario.nombre));
         if (nombreExiste) {
           throw new Error('El nombre de usuario ya está en uso');
         }
       }
-  
+
       if (currentUser.email !== usuario.email) {
         const emailExiste = await firstValueFrom(await this.existeEmail(usuario.email));
         if (emailExiste) {
           throw new Error('El correo electrónico ya está en uso');
         }
       }
-  
+
       const query = `
         UPDATE usuario 
         SET nombre = ?,
@@ -465,7 +477,7 @@ export class DbService {
             foto = ?
         WHERE id = ?;
       `;
-  
+
       await this.database.executeSql(query, [
         usuario.nombre,
         usuario.email,
@@ -473,14 +485,14 @@ export class DbService {
         usuario.foto,
         usuario.id
       ]);
-  
+
       await this.buscarUsuarios(); // Refresh users list
     } catch (e) {
       console.error('Error updating user:', e);
       throw e;
     }
   }
-  
+
   async getUserById(id: number): Promise<Usuario> {
     const query = `SELECT * FROM usuario WHERE id = ?;`;
     try {
@@ -599,9 +611,13 @@ export class DbService {
   // Comentarios
   async getComentariosPelicula(idPelicula: number): Promise<Comment[]> {
     const query = `
-      SELECT c.*, u.nombre as nombre_usuario 
+      SELECT 
+        c.*, 
+        u.nombre as nombre_usuario,
+        CASE WHEN bc.id IS NOT NULL THEN 1 ELSE 0 END as banned 
       FROM comentarios_peliculas c
       JOIN usuario u ON c.id_usuario = u.id
+      LEFT JOIN banned_comments bc ON c.id = bc.id_comentario
       WHERE c.id_pelicula = ?
       ORDER BY c.fecha DESC;
     `;
@@ -615,7 +631,8 @@ export class DbService {
           id_usuario: result.rows.item(i).id_usuario,
           comentario: result.rows.item(i).comentario,
           fecha: result.rows.item(i).fecha,
-          nombre_usuario: result.rows.item(i).nombre_usuario
+          nombre_usuario: result.rows.item(i).nombre_usuario,
+          banned: result.rows.item(i).banned
         });
       }
       return comments;
@@ -638,7 +655,7 @@ export class DbService {
       throw e;
     }
   }
-  
+
   async getUserComments(userId: number): Promise<any[]> {
     const query = `
       SELECT c.*, p.titulo as pelicula_titulo
@@ -712,6 +729,36 @@ export class DbService {
     } catch (e) {
       console.error('Error updating movie rating:', e);
       throw e;
+    }
+  }
+
+  // Banneo de comentarios
+  async banComment(commentId: number, reason: string): Promise<void> {
+    const query = `
+    INSERT INTO banned_comments (id_comentario, fecha, razon)
+    VALUES (?, ?, ?);
+  `;
+    try {
+      const date = new Date().toISOString();
+      await this.database.executeSql(query, [commentId, date, reason]);
+    } catch (e) {
+      console.error('Error banning comment:', e);
+      throw e;
+    }
+  }
+
+  async isCommentBanned(commentId: number): Promise<boolean> {
+    const query = `
+    SELECT COUNT(*) as count 
+    FROM banned_comments 
+    WHERE id_comentario = ?;
+  `;
+    try {
+      const result = await this.database.executeSql(query, [commentId]);
+      return result.rows.item(0).count > 0;
+    } catch (e) {
+      console.error('Error checking banned comment:', e);
+      return false;
     }
   }
 }
