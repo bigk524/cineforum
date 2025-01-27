@@ -24,20 +24,12 @@ const routes: Routes = [
     loadChildren: () => import('./pages/nosotros/nosotros.module').then( m => m.NosotrosPageModule)
   },
   {
-    path: 'blanerunner',
-    loadChildren: () => import('./pages/blanerunner/blanerunner.module').then( m => m.BlanerunnerPageModule)
-  },
-  {
     path: 'admin-panel',
     loadChildren: () => import('./pages/admin-panel/admin-panel.module').then( m => m.AdminPanelPageModule)
   },
   {
     path: 'recuperarcontra',
     loadChildren: () => import('./pages/recuperarcontra/recuperarcontra.module').then( m => m.RecuperarcontraPageModule)
-  },
-  {
-    path: 'tendencias',
-    loadChildren: () => import('./pages/tendencias/tendencias.module').then( m => m.TendenciasPageModule)
   },
   {
     path: 'perfil',
@@ -50,18 +42,6 @@ const routes: Routes = [
   {
     path: 'crear-publicacion',
     loadChildren: () => import('./pages/crear-publicacion/crear-publicacion.module').then( m => m.CrearPublicacionPageModule)
-  },
-  {
-    path: 'oppenheimer',
-    loadChildren: () => import('./pages/oppenheimer/oppenheimer.module').then( m => m.OppenheimerPageModule)
-  },
-  {
-    path: 'spider-man',
-    loadChildren: () => import('./pages/spider-man/spider-man.module').then( m => m.SpiderManPageModule)
-  },
-  {
-    path: 'barbie',
-    loadChildren: () => import('./pages/barbie/barbie.module').then( m => m.BarbiePageModule)
   },
   {
     path: 'opciones',
@@ -83,11 +63,6 @@ const routes: Routes = [
     path: '**',
     loadChildren: () => import('./pages/notfound/notfound.module').then( m => m.NotfoundPageModule)
   },
-  
-
-  
- 
-
 
 ];
 
