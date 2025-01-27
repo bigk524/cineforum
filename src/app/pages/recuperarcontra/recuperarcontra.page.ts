@@ -49,12 +49,12 @@ export class RecuperarcontraPage implements OnInit {
         const templateParams = {
           email: this.email,
           reset_link: resetLink,
-          to_email: this.email, // Dirección de correo del usuario
+          
         };
 
     // Llamar al servicio de EmailJS
     emailjs
-      .send('service_1lj1kxb', 'template_gkufg9e', templateParams, 'uZw4YfdppiljaIHqe')
+      .send('service_1lj1kxb', 'template_gkufg9e', templateParams,  'uZw4YfdppiljaIHqe')
       .then(
         (response: EmailJSResponseStatus) => {
           console.log('Correo enviado con éxito:', response.text);
