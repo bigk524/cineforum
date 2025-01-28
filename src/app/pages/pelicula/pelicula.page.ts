@@ -191,8 +191,6 @@ export class PeliculaPage implements OnInit {
     }
   }
 
-  
-
   calculateAverageRating() {
     const total = this.ratings.reduce((sum, rate) => sum + rate, 0);
     this.averageRating = this.ratings.length ? total / this.ratings.length : 0;

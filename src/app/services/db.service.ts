@@ -415,6 +415,21 @@ export class DbService {
     }
   }
 
+  async verifyCurrentPassword(userId: number, password: string): Promise<boolean> {
+    const query = `
+      SELECT COUNT(*) as count 
+      FROM usuario 
+      WHERE id = ? AND clave = ?;
+    `;
+    try {
+      const result = await this.database.executeSql(query, [userId, password]);
+      return result.rows.item(0).count > 0;
+    } catch (e) {
+      console.error('Error verifying password:', e);
+      throw e;
+    }
+  }
+
   async bannearUsuario(id: number, razon: string) {
     const hoy = new Date();
     const query =
@@ -525,10 +540,11 @@ export class DbService {
 
   async buscarPeliculas() {
     return await this.database.executeSql(
-      `SELECT p.*, ROUND(AVG(r.rating), 1) as rating
+      `SELECT 
+         p.*, 
+         ROUND(AVG(r.rating), 1) as rating
        FROM peliculas p 
-       LEFT JOIN ratings r 
-       ON p.id = r.id_pelicula
+       LEFT JOIN ratings r ON p.id = r.id_pelicula
        GROUP BY p.id;
      `, []
     ).then(result => {
@@ -706,28 +722,9 @@ export class DbService {
   `;
     try {
       await this.database.executeSql(query, [idPelicula, idUsuario, rating, date]);
-      await this.updateMovieRating(idPelicula);
+      await this.buscarPeliculas();
     } catch (e) {
       console.error('Error setting rating:', e);
-      throw e;
-    }
-  }
-
-  async updateMovieRating(idPelicula: number): Promise<void> {
-    const query = `
-    UPDATE peliculas 
-    SET rating = (
-      SELECT ROUND(AVG(rating), 1) 
-      FROM ratings 
-      WHERE id_pelicula = ?
-    )
-    WHERE id = ?;
-  `;
-    try {
-      await this.database.executeSql(query, [idPelicula, idPelicula]);
-      await this.buscarPeliculas(); // Refresh movies list
-    } catch (e) {
-      console.error('Error updating movie rating:', e);
       throw e;
     }
   }

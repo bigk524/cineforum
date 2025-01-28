@@ -35,6 +35,16 @@ export class OpcionesSeguridadPage implements OnInit {
   }
 
   async validar() {
+    const isCurrentPasswordValid = await this.dbService.verifyCurrentPassword(
+      this.currentUserId, 
+      this.oldPassword
+    );
+
+    if (!isCurrentPasswordValid) {
+      this.presentAlert("Error", "La contraseña actual es incorrecta");
+      return;
+    }
+    
     if (this.oldPassword == this.newPassword) {
       this.presentAlert("Error", "La nueva contraseña no puede ser igual a la anterior.");
       return;
