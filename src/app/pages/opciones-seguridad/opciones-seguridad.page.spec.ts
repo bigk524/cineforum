@@ -35,10 +35,10 @@ describe('OpcionesSeguridadPage', () => {
     expect(component.validarAux()).toBeFalsy();
   });
 
-  it('debe rechazar contraseñas que no coinciden con la de confirmacion', () => {
+  it('debe rechazar contraseñas que no cumplen los requerimientos minimos', () => {
     component.oldPassword = '123456';
-    component.newPassword = '@Cine123456';
-    component.newPasswordTest = '@Cisne55555';
+    component.newPassword = '123';
+    component.newPasswordTest = '123'; 
     expect(component.validarAux()).toBeFalsy();  
   })
 });
