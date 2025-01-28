@@ -34,29 +34,35 @@ export class OpcionesSeguridadPage implements OnInit {
     }
   }
 
+  validarAux(): boolean {
+    if (this.oldPassword == this.newPassword) {
+      this.presentAlert("Error", "La nueva contraseña no puede ser igual a la anterior.");
+      return false;
+    }
+
+    if (this.newPassword != this.newPasswordTest) {
+      this.presentAlert("Error", "Las contraseñas no coinciden.");
+      return false;
+    }
+
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W])[\w\W]{8,}$/.test(this.newPassword)) {
+      this.presentAlert('Error','La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un caracter especial');
+      return false;
+    }
+
+    return true;
+  }
+
   async validar() {
     const isCurrentPasswordValid = await this.dbService.verifyCurrentPassword(
       this.currentUserId, 
       this.oldPassword
     );
 
+    if (this.validarAux()) return;
+
     if (!isCurrentPasswordValid) {
       this.presentAlert("Error", "La contraseña actual es incorrecta");
-      return;
-    }
-    
-    if (this.oldPassword == this.newPassword) {
-      this.presentAlert("Error", "La nueva contraseña no puede ser igual a la anterior.");
-      return;
-    }
-
-    if (this.newPassword != this.newPasswordTest) {
-      this.presentAlert("Error", "Las contraseñas no coinciden.");
-      return;
-    }
-
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W])[\w\W]{8,}$/.test(this.newPassword)) {
-      this.presentAlert('Error','La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un caracter especial');
       return;
     }
 

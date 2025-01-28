@@ -20,4 +20,25 @@ describe('OpcionesSeguridadPage', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('debe aprobar contraseña nueva si la contraseña es igual a la de la confirmacion', () => {
+    component.oldPassword = '123456';
+    component.newPassword = '@Cine123456';
+    component.newPasswordTest = '@Cine123456';
+    expect(component.validarAux()).toBeTruthy();    
+  });
+
+  it('debe rechazar contraseñas repetidas', () => {
+    component.oldPassword = '@Cine123456';
+    component.newPassword = '@Cine123456'
+    component.newPasswordTest = '@Cine123456|';
+    expect(component.validarAux()).toBeFalsy();
+  });
+
+  it('debe rechazar contraseñas que no coinciden con la de confirmacion', () => {
+    component.oldPassword = '123456';
+    component.newPassword = '@Cine123456';
+    component.newPasswordTest = '@Cisne55555';
+    expect(component.validarAux()).toBeFalsy();  
+  })
 });
